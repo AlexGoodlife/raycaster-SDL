@@ -1,14 +1,14 @@
-# A Raycaster in C
+# A Raycaster in SDL
 
 ## Raycaster with textures
 
- ![Sample Image](images/raycaster.png)
+ ![Sample Image](images/raycaster.PNG)
 
 I made this small raycasting engine as a way to learn SDL and also some graphical computing
 
-**THIS ENGINE IS NOT VERY EFFICIENT**
+**THIS ENGINE IS NOT VERY EFFICIENT**,
 It crashes, the collisions (especially for walking backwards) are unpolished and the engine can be **slow** due to it rendering textures as individual points
-Of course all of this is subject to improvements
+of course all of this is subject to improvements
 
 ## Reference
 Alot of the code was direct reference from 3DSage's youtube series on raycasters
