@@ -50,13 +50,13 @@ void drawRays(SDL_Renderer *gRenderer, float playerAngle, int playerX, int playe
 			distanceTotal = distanceH;
 			SDL_SetRenderDrawColor(gRenderer, 100, 0, 0, 0xFF);
 		}
-		// SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 0xFF);
+
 		SDL_RenderDrawLine(gRenderer, playerX+4, playerY+4, rayX, rayY);
 		smallestRay = min((float)smallestRay, (float)distanceTotal);
+
 		//Draw 3D
 		draw3D(gRenderer, playerAngle, rayAngle, distanceTotal, horizontalMapText,shading, rayX, rayY, playerX, playerY, i);
-		// printf("3D\n");
-
+	
 		rayAngle += DEGREE;
 		rayAngle = fixAngle(rayAngle);
 	}
@@ -70,7 +70,8 @@ float renderHorizontalRays(int playerX, int playerY, float rayAngle, float *hori
 	int my;
 	float distanceH = 10000000000;
 	int mapPos;
-	//check horizontal lines
+
+
 	float aTan = -1/tan(rayAngle); 
 	if(rayAngle > PI){   //looking down
 		*rayY = (((int)playerY>>6)<<6) - 0.0001;
@@ -97,7 +98,7 @@ float renderHorizontalRays(int playerX, int playerY, float rayAngle, float *hori
 		if(mapPos > 0 && mapPos< mapX*mapY && mapWalls[mapPos] >0){ // hit wall
 			*horizontalX = *rayX;
 			*horizontalY = *rayY;
-			distanceH = distance(playerX, playerY, *horizontalX, *horizontalY, rayAngle);
+			distanceH = distance(playerX, playerY, *horizontalX, *horizontalY);
 			dof = 8;
 			*horizontalMapText = mapWalls[mapPos]-1;
 		}
@@ -118,7 +119,8 @@ float renderVerticalRays(int playerX, int playerY, float rayAngle, float *vertic
 	int my;
 	float distanceV = 10000000000;
 	int mapPos;
-		//check vertical lines
+
+	//check vertical lines
 	float nTan = -tan(rayAngle); 
 	if(rayAngle > PI2 && rayAngle <PI3){   //looking down
 		*rayX = (((int)playerX>>6)<<6) - 0.0001;
@@ -132,7 +134,7 @@ float renderVerticalRays(int playerX, int playerY, float rayAngle, float *vertic
 		x0 = 64;
 		y0 -= x0 * nTan;
 	}
-		// looking straight left or right
+	// looking straight left or right
 	if(rayAngle == 0 || rayAngle == PI){
 		*rayX = playerX;
 		*rayY = playerY;
@@ -145,7 +147,7 @@ float renderVerticalRays(int playerX, int playerY, float rayAngle, float *vertic
 		if(mapPos > 0 && mapPos< mapX*mapY && mapWalls[mapPos] >0){ // hit wall
 			*verticalX = *rayX;
 			*verticalY = *rayY;
-			distanceV = distance(playerX, playerY, *verticalX, *verticalY, rayAngle);
+			distanceV = distance(playerX, playerY, *verticalX, *verticalY);
 			dof = 8;
 			*verticalMapText = mapWalls[mapPos]-1;
 		}
@@ -172,12 +174,9 @@ void draw3D(SDL_Renderer *gRenderer, float playerAngle, float rayAngle, int dist
 			textureYOffset = (lineHeight-320)/2;
 			lineHeight = 320;
 		}
+
 		int lineOffset = 160-(lineHeight/2);
-		// SDL_Rect wall = {i*8+530, lineOffset, 8,lineHeight+lineOffset};
-		// SDL_RenderFillRect(gRenderer, &wall);
-		// SDL_RenderDrawLine(gRenderer, i*8+530,lineOffset,i*8+530, lineHeight+lineOffset);
-		// for(int j = 0; j < 8;j++)
-		// 	SDL_RenderDrawLine(gRenderer, i*8+530+j,lineOffset,i*8+530+j, lineHeight+lineOffset);
+
 		float textureY = textureYOffset * textureYStep + horizontalMapText*32;
 		float textureX;
 		if(shading == 1){
@@ -197,10 +196,9 @@ void draw3D(SDL_Renderer *gRenderer, float playerAngle, float rayAngle, int dist
 			float color = textures[(int)(textureY)*32 + (int)(textureX)]*shading;
 			SDL_SetRenderDrawColor(gRenderer, color*255, color*255,color*255, 255);
 			for(int line = 0; line < 8;line++)
-				SDL_RenderDrawPoint(gRenderer, i*8+530+line,j+lineOffset);
+				SDL_RenderDrawPoint(gRenderer, i*8+line+530,j+lineOffset);
 			textureY += textureYStep;
 		}
-		//printf("%f\n", rayAngle);
 
 		// Draw Floors
 		for(int j = lineOffset + lineHeight; j <320;j++){
@@ -213,7 +211,7 @@ void draw3D(SDL_Renderer *gRenderer, float playerAngle, float rayAngle, int dist
 			int map = mapFloors[(int)(textureY/32.0)*mapX+(int)(textureX/32.0)]*32*32;
 			float color = textures[((int)(textureY)&31)*32 + ((int)(textureX)&31)+map] *0.7;
 			SDL_SetRenderDrawColor(gRenderer, color/1.3*255, color/1.3*255,color*255, 255);
-			// SDL_RenderDrawPoint(gRenderer, i*8+530,j);
+
 			for(int line = 0; line < 8;line++){
 				SDL_RenderDrawPoint(gRenderer, i*8+530+line,j);
 			}
@@ -222,16 +220,16 @@ void draw3D(SDL_Renderer *gRenderer, float playerAngle, float rayAngle, int dist
 			map = mapCeiling[(int)(textureY/32.0)*mapX+(int)(textureX/32.0)]*32*32;
 			color = textures[((int)(textureY)&31)*32 + ((int)(textureX)&31)+map] *0.7;
 			SDL_SetRenderDrawColor(gRenderer, color/2.0*255, color/1.2*255,color/2.0*255, 255);
-			// SDL_RenderDrawPoint(gRenderer, i*8+530,j);
+			
 			for(int line = 0; line < 8;line++){
-				SDL_RenderDrawPoint(gRenderer, i*8+530+line,320 - j);
+				SDL_RenderDrawPoint(gRenderer, i*8+line+530,320 - j);
 			}
 
 		}
 }
 
 bool checkColisions(SDL_Renderer *gRenderer, float playerAngle, int playerX, int playerY, int playerDeltaX, int playerDeltaY,float directionOffset){
-	//int distanceTotal;
+
 	float rayX;
 	float rayY;
 
@@ -254,27 +252,20 @@ bool checkColisions(SDL_Renderer *gRenderer, float playerAngle, int playerX, int
 		horizontalMapText = verticalMapText;
 		rayX = verticalX;
 		rayY = verticalY;
-		// distanceTotal = distanceV;
 		SDL_SetRenderDrawColor(gRenderer, 240, 0, 0, 0xFF);
 	}
 	if(distanceH < distanceV){
 		rayX = horizontalX;
 		rayY = horizontalY;
-		// distanceTotal = distanceH;
 		SDL_SetRenderDrawColor(gRenderer, 100, 0, 0, 0xFF);
 	}
-		// SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 0xFF);
-	// SDL_RenderDrawLine(gRenderer, playerX+4, playerY+4, rayX, rayY);
-	// printf("PLAYERX: %d, PLAYERY: %d", playerX + playerDeltaX, playerY + playerDeltaY);
-	// printf("RAY X: %f RAY Y: %f\n", rayX, rayY);
 	if(directionOffset >= PI){
 		playerDeltaX = -playerDeltaX;
 		playerDeltaY = -playerDeltaY;
 	
 	}
 
-	// printf("%lf \n",distance(playerX, playerY,rayX, rayY,rayAngle) );
-	return distance(playerX, playerY,rayX, rayY,rayAngle) > 20;
+	return distance(playerX, playerY,rayX, rayY) > 20;
 }
 
 

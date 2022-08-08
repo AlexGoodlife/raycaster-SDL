@@ -3,7 +3,7 @@
 #include "../include/utils.h"
 
 
-float distance(float ax, float ay, float bx, float by, float angle){
+float distance(float ax, float ay, float bx, float by){
 	return sqrt((bx-ax) * (bx-ax) + (by-ay) * (by-ay));
 }
 
