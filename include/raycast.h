@@ -19,12 +19,7 @@ float renderVerticalRays(int playerX, int playerY, float rayAngle, float *vertic
 //Renders horizontal Rays 
 float renderHorizontalRays(int playerX, int playerY, float rayAngle, float *horizontalX, float *horizontalY, float *rayX, float *rayY, int *horizontalMapText);
 
-//Casts a ray and checks for colisions between the player and the wall the ray hit, 
-//Currently only used for checking colisions in the players back as the front is handled in the main raycasting function
+//Casts a ray and checks for colisions between the player and the wall the ray hit
 bool checkColisions(SDL_Renderer *gRenderer, float playerAngle, int playerX, int playerY, int playerDeltaX, int playerDeltaY, float directionOffset);
-
-//Variable used for frontal player colisions
-extern int smallestRay;
-
 
 #endif

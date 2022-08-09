@@ -3,10 +3,7 @@
 #include <stdbool.h>
 #include "../include/raycast.h"
 
-int smallestRay = INT32_MAX;
-
 void drawRays(SDL_Renderer *gRenderer, float playerAngle, int playerX, int playerY){
-	smallestRay = INT32_MAX;
 	int distanceTotal;
 	float rayX;
 	float rayY;
@@ -52,7 +49,6 @@ void drawRays(SDL_Renderer *gRenderer, float playerAngle, int playerX, int playe
 		}
 
 		SDL_RenderDrawLine(gRenderer, playerX+4, playerY+4, rayX, rayY);
-		smallestRay = min((float)smallestRay, (float)distanceTotal);
 
 		//Draw 3D
 		draw3D(gRenderer, playerAngle, rayAngle, distanceTotal, horizontalMapText,shading, rayX, rayY, playerX, playerY, i);
