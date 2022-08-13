@@ -6,9 +6,8 @@
 
 I made this small raycasting engine as a way to learn SDL and also some graphical computing
 
-**THIS ENGINE IS NOT VERY EFFICIENT**,
-It crashes, the collisions (especially for walking backwards) are unpolished and the engine can be **slow** due to it rendering textures as individual points
-of course all of this is subject to improvements
+**THIS ENGINE IS IN DEVELOPMENT**,
+I am currently working on optimizing and revamping the engine to be more efficient
 
 ## Reference
 Alot of the code was direct reference from 3DSage's youtube series on raycasters
