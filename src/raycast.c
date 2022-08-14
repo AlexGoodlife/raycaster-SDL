@@ -18,7 +18,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 
 	float rayAngle = fixAngle(player->angle - DEGREE*30);
 
-	for(int i = 0; i < 60;i++){
+	for(int i = 0; i < 120;i++){
 		verticalMapText = 0;
 		horizontalMapText= 0;
 
@@ -47,12 +47,12 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 			SDL_SetRenderDrawColor(gRenderer, 100, 0, 0, 0xFF);
 		}
 
-		SDL_RenderDrawLine(gRenderer, player->x+4, player->y+4, rayX, rayY);
+		// SDL_RenderDrawLine(gRenderer, player->x+4, player->y+4, rayX, rayY);
 
 		//Draw 3D
 		draw3D(gRenderer, player, rayAngle, distanceTotal, horizontalMapText,shading, rayX, rayY,i);
 	
-		rayAngle = fixAngle(rayAngle + DEGREE);
+		rayAngle = fixAngle(rayAngle + DEGREE/2);
 	}
 }
 float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, float *horizontalY, float *rayX, float *rayY, int *horizontalMapText){
@@ -159,9 +159,9 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, int distanc
 	cAngle = fixAngle(cAngle);
 
 	distanceTotal = distanceTotal* cos(cAngle);
-	float lineHeight = (blockSize*320)/distanceTotal;
+	float lineHeight = (blockSize*640)/distanceTotal;
 		
-	int lineOffset = 160-(lineHeight/2);
+	int lineOffset = 320-(lineHeight/2);
 
 	float textureX;
 	if(shading == 1){
@@ -181,18 +181,18 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, int distanc
 
 	// draw textured walls
 	SDL_Rect wall = {textureX, 0, 1,32};
-	renderTexture(gRenderer,textures[horizontalMapText], i*8+530,lineOffset,&wall, 8, lineHeight);
+	renderTexture(gRenderer,textures[horizontalMapText], i*8,lineOffset,&wall, 8, lineHeight);
 
-	//floors SDL_RECT
-	for(int j = lineOffset + lineHeight;j < 540;j++){
-		SDL_Rect floor = {i*8 + 530, j, 8,1};
-		SDL_Rect ceil = {i*8 + 530, 320-j, 8, 1};
+	// //floors SDL_RECT
+	// for(int j = lineOffset + lineHeight;j < 640;j++){
+	// 	SDL_Rect floor = {i*8, j, 8,1};
+	// 	SDL_Rect ceil = {i*8, 640-j, 8, 1};
 		
-		SDL_SetRenderDrawColor(gRenderer,127,127,127,255);
-		SDL_RenderFillRect(gRenderer, &floor);
-		SDL_SetRenderDrawColor(gRenderer,50,50,50,0);
-		SDL_RenderFillRect(gRenderer, &ceil);
-	}
+	// 	SDL_SetRenderDrawColor(gRenderer,127,127,127,255);
+	// 	SDL_RenderFillRect(gRenderer, &floor);
+	// 	SDL_SetRenderDrawColor(gRenderer,50,50,50,0);
+	// 	SDL_RenderFillRect(gRenderer, &ceil);
+	// }
 
 	/*  TEXTUREDFLOOR ATTEMPT
 
@@ -247,4 +247,13 @@ bool checkColisions(SDL_Renderer *gRenderer, Player *player,float directionOffse
 		SDL_SetRenderDrawColor(gRenderer, 100, 0, 0, 0xFF);
 	}
 	return sqrt(distance(player->x, player->y,rayX, rayY)) > 20;
+}
+
+void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth){
+	SDL_SetRenderDrawColor(gRenderer, 90, 90,90,255);
+	SDL_Rect floor = {0,screenHeight>>1, screenWidth, screenHeight >> 1};
+	SDL_RenderFillRect(gRenderer, &floor);
+	SDL_SetRenderDrawColor(gRenderer, 190, 190,190,255);
+	SDL_Rect ceil = {0,0, screenWidth, screenHeight >> 1};
+	SDL_RenderFillRect(gRenderer, &ceil);
 }
