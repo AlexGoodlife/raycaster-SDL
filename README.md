@@ -4,15 +4,15 @@
 
  ![Sample Image](images/raycaster_new.PNG)
 
-I made this small raycasting engine as a way to learn SDL and also some graphical computing
+   I made this small raycasting engine as a way to learn SDL and also some graphical computing
 
-**THIS ENGINE IS IN DEVELOPMENT**
-I am currently working on optimizing and revamping the engine to be more efficient
+   **THIS ENGINE IS IN DEVELOPMENT**
+   I am currently working on optimizing and revamping the engine to be more efficient
 
 ## Todo
-   -[ ] Floor and ceiling textures
-   -[ ] Sprites
-   -[ ] Improve mouse movement
+   - [ ] Floor and ceiling textures
+   - [ ] Sprites
+   - [ ] Improve mouse movement
 
 
 ## Reference
