@@ -23,4 +23,6 @@ float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, f
 //Casts a ray and checks for colisions between the player and the wall the ray hit
 bool checkColisions(SDL_Renderer *gRenderer, Player *player,float directionOffset);
 
+void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth);
+
 #endif
