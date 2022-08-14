@@ -7,8 +7,8 @@
 
 #include "include\raycast.h"
 
-const int SCREEN_WIDTH = 1020;
-const int SCREEN_HEIGHT = 540;
+const int SCREEN_WIDTH = 960;
+const int SCREEN_HEIGHT = 640;
 
 #define CTR_X (SCREEN_WIDTH / 2)
 #define CTR_Y (SCREEN_HEIGHT / 2)
@@ -92,9 +92,9 @@ bool loadMedia(){
 	bool success = true;
 
 	//Load sprite texture
-	textures[0] = loadFromFile("textures/checker_3.png", gRenderer);
-	textures[1] = loadFromFile("textures/checker.png", gRenderer);
-	textures[2] = loadFromFile("textures/blue_checker.png",gRenderer);
+	textures[0] = loadFromFile("textures/wall.png", gRenderer);
+	textures[1] = loadFromFile("textures/wall_2.png", gRenderer);
+	textures[2] = loadFromFile("textures/wall_3.png",gRenderer);
 	for(int i = 0; i < n_textures; i++){
 		if(textures[i] == NULL){
 		success = false;
@@ -187,11 +187,12 @@ void display(){
 	SDL_RenderClear(gRenderer);
 
 	//drawing mapWalls
-	drawMap2D(gRenderer);
+	// drawMap2D(gRenderer);
 
 	//draw player
-	drawPlayer(gRenderer, player);
+	// drawPlayer(gRenderer, player);
 
+	drawFloors(gRenderer, SCREEN_HEIGHT, SCREEN_WIDTH);
 	//draw rays and walls
 	drawRays(gRenderer, player);
 
@@ -232,7 +233,7 @@ int main(int argc, char *args[])
 			int frames = 0;
 			float timeStep;
 
-			// startTimer(&mTimer);
+			startTimer(&mTimer);
 			while (!quit){
 				//Calculate time step
 				timeStep = getTimerTicks(&stepTimer) *0.2;
@@ -243,6 +244,7 @@ int main(int argc, char *args[])
 				{
 				    avgFPS = 0;
 				}
+				// printf("%f\n", avgFPS);
 				startTimer(&stepTimer);
 				display();
 				frames++;
