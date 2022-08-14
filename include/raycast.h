@@ -5,21 +5,22 @@
 #include <SDL.h>
 #include "world.h"
 #include "utils.h"
+#include "player.h"
 
 
 //Raycasting main function
-void drawRays(SDL_Renderer *gRenderer, float playerAngle, float playerX, float playerY);
+void drawRays(SDL_Renderer *gRenderer, Player *player);
 
 //Handles 3D projection onto screen
-void draw3D(SDL_Renderer *gRenderer, float playerAngle, float rayAngle, int distanceTotal, int horizontalMapText, float shading, float rayX, float rayY, int playerX, int playerY, int i);
+void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, int distanceTotal, int horizontalMapText, float shading, float rayX, float rayY,int i);
 
 //Renders vertical Rays 
-float renderVerticalRays(float playerX, float playerY, float rayAngle, float *verticalX, float *verticalY, float *rayX, float *rayY, int *verticalMapText);
+float renderVerticalRays(Player *player, float rayAngle, float *verticalX, float *verticalY, float *rayX, float *rayY, int *verticalMapText);
 
 //Renders horizontal Rays 
-float renderHorizontalRays(float playerX, float playerY, float rayAngle, float *horizontalX, float *horizontalY, float *rayX, float *rayY, int *horizontalMapText);
+float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, float *horizontalY, float *rayX, float *rayY, int *horizontalMapText);
 
 //Casts a ray and checks for colisions between the player and the wall the ray hit
-bool checkColisions(SDL_Renderer *gRenderer, float playerAngle, float playerX, float playerY,float directionOffset);
+bool checkColisions(SDL_Renderer *gRenderer, Player *player,float directionOffset);
 
 #endif

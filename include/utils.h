@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define PI 3.1415926535
 #define PI2 PI/2
