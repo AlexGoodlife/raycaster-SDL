@@ -1,7 +1,7 @@
 
 OBJS_TEST = raycaster.c src/world.c
 
-OBJS = main.c src/raycast.c src/utils.c src/world.c
+OBJS = main.c src/raycast.c src/utils.c src/world.c src/player.c
 
 CC = gcc
 
