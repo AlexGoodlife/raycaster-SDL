@@ -18,9 +18,6 @@ extern int mapFloors[];
 // Ceiling map
 extern int mapCeiling[];
 
-// All 32x32 textures
-//extern int textures[];
-
 LTexture *gSpriteSheetTexture;
 
 SDL_Rect gSprites[4];
