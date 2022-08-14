@@ -1,5 +1,6 @@
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -12,13 +13,16 @@ const int SCREEN_HEIGHT = 540;
 #define CTR_X (SCREEN_WIDTH / 2)
 #define CTR_Y (SCREEN_HEIGHT / 2)
 
-int playerX;
-int playerY;
+float playerX;
+float playerY;
 float playerDeltaX;
 float playerDeltaY;
 float playerAngle;
 float mouseX;
 float mouseY;
+
+float avgFPS;
+
 
 // The window we'll be rendering to
 SDL_Window *gWindow = NULL;
@@ -27,6 +31,7 @@ SDL_Window *gWindow = NULL;
 SDL_Surface *gScreenSurface = NULL;
 
 SDL_Renderer *gRenderer = NULL;
+
 
 bool init(){
 	// Initialization flag
@@ -62,13 +67,39 @@ bool init(){
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0);
-				SDL_SetRelativeMouseMode(SDL_TRUE);
-				// Get window surface
-				gScreenSurface = SDL_GetWindowSurface(gWindow);
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				int imgFlags = IMG_INIT_PNG;
+				if( !( IMG_Init( imgFlags ) & imgFlags ) )
+				{
+					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+					success = false;
+				}
+				else
+				{
+					SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0);
+					SDL_SetRelativeMouseMode(SDL_TRUE);
+					//Get window surface
+					gScreenSurface = SDL_GetWindowSurface( gWindow );
+				}
 			}
 		}
 	}
+	return success;
+}
+
+bool loadMedia(){
+	//Loading success flag
+	bool success = true;
+
+	//Load sprite texture
+	textures[0] = loadFromFile("textures/checker_3.png", gRenderer);
+	textures[1] = loadFromFile("textures/checker.png", gRenderer);
+	textures[2] = loadFromFile("textures/blue_checker.png",gRenderer);
+	for(int i = 0; i < n_textures; i++){
+		if(textures[i] == NULL){
+		success = false;
+		}
+	}	
 	return success;
 }
 
@@ -78,12 +109,16 @@ void close(){
 	SDL_DestroyWindow(gWindow);
 	gRenderer = NULL;
 	gWindow = NULL;
+	for(int i = 0; i < n_textures;i++)
+		free(textures[i]);
+	// free(gSpriteSheetTexture);
 
 	// Quit SDL subsystems
+	IMG_Quit();
 	SDL_Quit();
 }
 
-bool events(SDL_Event *e){
+bool events(SDL_Event *e, float timeStep){
 	// Handle events on queue
 	while (SDL_PollEvent(e) != 0)
 	{
@@ -120,38 +155,112 @@ bool events(SDL_Event *e){
         }
         else{
             const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
+			int xOffset = 0;
+			int yOffset = 0;
+			if(playerDeltaX < 0)
+				xOffset -= 20;
+			else
+				xOffset = 20;
+			if(playerDeltaY < 0)
+				yOffset -= 20;
+			else
+				yOffset = 20;
+			int iPlayerX = (int)playerX >> 6; // bitshift right by 6 to divide by 64
+			int iPlayerXAdd = (int)(playerX + xOffset) >> 6;
+			int iPlayerXSub = (int)(playerX - xOffset) >> 6;
+
+			int iPlayerY = (int)playerY >> 6;
+			int iPlayerYAdd = (int)(playerY + yOffset) >> 6;
+			int iPlayerYSub = (int)(playerY - yOffset) >> 6;
             if( currentKeyStates[ SDL_SCANCODE_W ] )
                 {
-                    if(smallestRay > 20){
-                        playerX += playerDeltaX; 
-                        playerY += playerDeltaY;
-                    }
+					bool canMove = checkColisions(gRenderer, playerAngle, playerX, playerY,0);
+                    if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && canMove){
+						playerX += playerDeltaX; //* timeStep; //*1/avgFPS;
+					}
+					if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0 && canMove){
+						playerY += playerDeltaY; //*timeStep; //* 1/avgFPS;
+					}
                 }
             else if( currentKeyStates[ SDL_SCANCODE_S ] )
                 {
-                    if(checkColisions(gRenderer, playerAngle, playerX, playerY,playerDeltaX, playerDeltaY, PI)){
-                        playerX -= playerDeltaX;
-                        playerY -= playerDeltaY; 
-                    }
+				bool canMove = checkColisions(gRenderer, playerAngle, playerX, playerY,PI);
+
+                if(mapWalls[iPlayerY * mapX + iPlayerXSub] == 0 && canMove){
+						playerX -= playerDeltaX; //*timeStep; //* 0.2 * fps;
+				}
+				if(mapWalls[iPlayerYSub * mapX + iPlayerX] == 0 && canMove){
+						playerY -= playerDeltaY; //*timeStep; //* 0.2 * fps;
+				}
                 }
-            else if( currentKeyStates[ SDL_SCANCODE_A ] )
+            else if( currentKeyStates[ SDL_SCANCODE_Q ] )
                 {
-                    playerAngle -= 0.1;
-                    if(playerAngle < 0)
-                        playerAngle += 2*PI;
+                    playerAngle = fixAngle(playerAngle -0.1);
                     playerDeltaX = cos(playerAngle)*5;
                     playerDeltaY = sin(playerAngle)*5;
                 }
-            else if( currentKeyStates[ SDL_SCANCODE_D] )
+            else if( currentKeyStates[ SDL_SCANCODE_E] )
                 {
-                    playerAngle += 0.1;
-                    if(playerAngle > 2*PI)
-                        playerAngle -= 2*PI;
+					playerAngle = fixAngle(playerAngle +0.1);
                     playerDeltaX = cos(playerAngle)*5;
                     playerDeltaY = sin(playerAngle)*5;
                 }
-            else if(currentKeyStates[SDL_SCANCODE_E]){
-                    int xOffset = 0;
+			  else if( currentKeyStates[ SDL_SCANCODE_D] )
+                {
+				int xOffset = 0;
+				int yOffset = 0;
+				float playerDeltaX_temp = cos(fixAngle(playerAngle + PI/2))*5;
+                float playerDeltaY_temp = sin(fixAngle(playerAngle+ PI/2))*5;
+				if(playerDeltaX_temp < 0)
+					xOffset -= 20;
+				else
+					xOffset = 20;
+				if(playerDeltaY_temp < 0)
+					yOffset -= 20;
+				else
+					yOffset = 20;
+				int iPlayerX = (int)playerX >> 6; // bitshift right by 6 to divide by 64
+				int iPlayerXAdd = (int)(playerX + xOffset) >> 6;
+
+				int iPlayerY = (int)playerY >> 6;
+				int iPlayerYAdd = (int)(playerY + yOffset) >> 6;
+				bool canMove = checkColisions(gRenderer, playerAngle, playerX, playerY,PI/2);
+                    if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && canMove){
+						playerX += playerDeltaX_temp/2; //* timeStep; //*1/avgFPS;
+					}
+					if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0 && canMove){
+						playerY += playerDeltaY_temp/2; //*timeStep; //* 1/avgFPS;
+					}
+                }
+			else if( currentKeyStates[ SDL_SCANCODE_A] )
+                {
+				int xOffset = 0;
+				int yOffset = 0;
+				float playerDeltaX_temp = cos(fixAngle(playerAngle - PI/2))*5;
+                float playerDeltaY_temp = sin(fixAngle(playerAngle - PI/2))*5;
+				if(playerDeltaX_temp < 0)
+					xOffset -= 20;
+				else
+					xOffset = 20;
+				if(playerDeltaY_temp < 0)
+					yOffset -= 20;
+				else
+					yOffset = 20;
+				int iPlayerX = (int)playerX >> 6; // bitshift right by 6 to divide by 64
+				int iPlayerXAdd = (int)(playerX + xOffset) >> 6;
+
+				int iPlayerY = (int)playerY >> 6;
+				int iPlayerYAdd = (int)(playerY + yOffset) >> 6;
+				bool canMove = checkColisions(gRenderer, playerAngle, playerX, playerY,-PI/2);
+                    if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && canMove){
+						playerX += playerDeltaX_temp/2;// * timeStep; //*1/avgFPS;
+					}
+					if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0 && canMove){
+						playerY += playerDeltaY_temp/2;// *timeStep; //* 1/avgFPS;
+					}
+                }
+            else if(currentKeyStates[SDL_SCANCODE_F]){
+                int xOffset = 0;
                 int yOffset = 0;
                 if(playerDeltaX < 0)
                     xOffset -= 25;
@@ -161,9 +270,9 @@ bool events(SDL_Event *e){
                     yOffset -= 25;
                 else
                     yOffset = 25;
-                int iPlayerXAdd = (playerX + xOffset)/64;
+                int iPlayerXAdd = (int)(playerX + xOffset) >> 6; // bitshift right to divide by 64
 
-                int iPlayerYAdd = (playerY + yOffset)/64;
+                int iPlayerYAdd = (int)(playerY + yOffset) >> 6;
 
                 if(mapWalls[iPlayerYAdd*mapX + iPlayerXAdd] == 4)
                     mapWalls[iPlayerYAdd*mapX + iPlayerXAdd] = 0;
@@ -172,6 +281,7 @@ bool events(SDL_Event *e){
 	}
 	return false;
 }
+
 
 void drawPlayer(){
 	// Drawing player
@@ -222,16 +332,39 @@ void display()
 
 int main(int argc, char *args[])
 {
+	printf("%d\n", n_textures);
 	if (!init()){
 		printf("Failed to initialize!\n");
 	}
 	else
 	{
-		bool quit = false;
-		SDL_Event e;
-		while (!quit){
-			quit = events(&e);
-			display();
+		if(!loadMedia()){
+			printf("FAILED TO LOAD MEDIA!\n");
+		}
+		else{
+			bool quit = false;
+			SDL_Event e;
+			Timer mTimer = timer(0,0,false,false);
+			Timer stepTimer = timer(0,0,false,false);
+			int frames = 0;
+			float timeStep;
+
+			// startTimer(&mTimer);
+			while (!quit){
+				//Calculate time step
+				timeStep = getTimerTicks(&stepTimer) *0.2;
+				quit = events(&e, timeStep);
+				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
+				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
+				if( avgFPS > 2000000 )
+				{
+				    avgFPS = 0;
+				}
+				// printf("%f\n", avgFPS);
+				startTimer(&stepTimer);
+				display();
+				frames++;
+			}
 		}
 	}
 	close();

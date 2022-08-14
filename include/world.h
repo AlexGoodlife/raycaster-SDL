@@ -3,6 +3,7 @@
 
 // World textures and maps, textures taken from 3D Sage
 
+#include "utils.h"
 
 int mapX;
 int mapY;
@@ -18,6 +19,14 @@ extern int mapFloors[];
 extern int mapCeiling[];
 
 // All 32x32 textures
-extern int textures[];
+//extern int textures[];
+
+LTexture *gSpriteSheetTexture;
+
+SDL_Rect gSprites[4];
+
+LTexture* textures[3];
+
+#define n_textures (sizeof textures / sizeof *textures)
 
 #endif

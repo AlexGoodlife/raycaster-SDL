@@ -1,5 +1,10 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef _UTILS_H
+#define _UTILS_H
+
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdio.h>
+#include <stdbool.h>
 
 #define PI 3.1415926535
 #define PI2 PI/2
@@ -17,5 +22,41 @@ float max(float x, float y);
 
 // Min between 2 floats
 float min(float x,float y);
+
+
+//TIMER AND TIMER FUNCS
+
+typedef struct{
+    Uint32 startTicks;
+    Uint32 stopTicks;
+    bool paused;
+    bool started;
+}Timer;
+
+Timer timer(Uint32 startTicks, Uint32 stopTicks, bool paused, bool started);
+
+void startTimer(Timer* mTimer);
+
+void stopTimer(Timer *mTimer);
+
+void pauseTimer(Timer *mTimer);
+
+void unpauseTimer(Timer *mTimer);
+
+Uint32 getTimerTicks(Timer *mTimer);
+
+// TEXTURE AND TEXTURE FUNCS
+
+typedef struct{
+    SDL_Texture* texture;
+    int width;
+    int height;
+}LTexture;
+
+LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer);
+
+void renderTexture(SDL_Renderer* gRenderer, LTexture* texture,int x, int y, SDL_Rect* clip,int width, int height);
+
+
 
 #endif
