@@ -10,9 +10,9 @@ I made this small raycasting engine as a way to learn SDL and also some graphica
 I am currently working on optimizing and revamping the engine to be more efficient
 
 ## Todo
-   -[Floor and ceiling textures]
-   -[Sprites]
-   -[Improve mouse movement]
+   -[ ] Floor and ceiling textures
+   -[ ] Sprites
+   -[ ] Improve mouse movement
 
 
 ## Reference
@@ -26,3 +26,5 @@ Alot of the math was derived from this video
 
 SDL initialization and event handling from LazyFoo's tutorials
    -[SDL Tutorials](https://lazyfoo.net/tutorials/SDL/)
+
+
