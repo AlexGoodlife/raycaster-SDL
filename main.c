@@ -12,7 +12,7 @@ const int SCREEN_HEIGHT = 640;
 #define CTR_Y (SCREEN_HEIGHT / 2)
 
 LTexture* textures[3];
-Sprite* Lsprites[6];
+Sprite* Lsprites[7];
 
 Player* player;
 
@@ -45,12 +45,13 @@ bool init(){
 	player->deltaX = cos(player->angle);
 	player->deltaY = sin(player->angle);
 
-	Lsprites[0] = sprite(1.5*64, 5*64,-20,0,true,1,NULL);
-	Lsprites[1] = sprite(3.5*64, 5*64,-20,0,true,1,NULL);
-	Lsprites[2] = sprite(2.5*64, 5*64,-20,0,true,1,NULL);
-	Lsprites[3] = sprite(2.5*64, 4.6*64,-20,0,true,1,NULL);
-	Lsprites[4] = sprite(2.5*64, 5.4*64,-20,0,true,1,NULL);
-	Lsprites[5] = sprite(3.5*64, 6.5*64,-20,0,true,1,NULL);
+	Lsprites[0] = sprite(1.5*64, 5*64,-20,0,true,1,NULL,1);
+	Lsprites[1] = sprite(3.5*64, 5*64,-20,0,true,1,NULL,1);
+	Lsprites[2] = sprite(2.5*64, 5*64,-20,0,true,1,NULL,1);
+	Lsprites[3] = sprite(2.5*64, 4.6*64,-20,0,true,1,NULL,1);
+	Lsprites[4] = sprite(2.5*64, 5.4*64,-20,0,true,1,NULL,1);
+	Lsprites[5] = sprite(3.5*64, 6.5*64,-20,0,true,1,NULL,1);
+	Lsprites[6] = sprite(4.5*64, 5*64, -20,0,true,1,NULL, 8);
 
 
 	// Initialize SDL
@@ -110,12 +111,22 @@ bool loadMedia(){
 	textures[1] = loadFromFile("textures/bluestone.png", gRenderer,gWindow);
 	textures[2] = loadFromFile("textures/colorstone.png",gRenderer,gWindow);
 
-	Lsprites[0]->texture = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
-	Lsprites[1]->texture = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);
-	Lsprites[2]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[3]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[4]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[5]->texture = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
+	Lsprites[0]->texture[0] = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
+	Lsprites[1]->texture[0] = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);
+	Lsprites[2]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[3]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[4]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[5]->texture[0] = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
+
+	Lsprites[6]->texture[0] = loadFromFile("sprites/guard/guard_1_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[1] = loadFromFile("sprites/guard/guard_2_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[2] = loadFromFile("sprites/guard/guard_3_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[3] = loadFromFile("sprites/guard/guard_4_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[4] = loadFromFile("sprites/guard/guard_5_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[5] = loadFromFile("sprites/guard/guard_6_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[6] = loadFromFile("sprites/guard/guard_7_t.png", gRenderer, gWindow);
+	Lsprites[6]->texture[7] = loadFromFile("sprites/guard/guard_8_t.png", gRenderer, gWindow);
+
 	for(int i = 0; i < n_textures; i++){
 		if(textures[i] == NULL){
 		success = false;
@@ -236,7 +247,8 @@ void close(){
 	for(int i = 0; i < n_textures;i++)
 		free(textures[i]);
 	free(player);
-	free(Lsprites[0]);
+	for(int i = 0; i < n_sprites;i++)
+		free(Lsprites[i]);
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
@@ -258,7 +270,6 @@ int main(int argc, char *args[])
 			SDL_Event e;
 			Timer mTimer = timer(0,0,false,false);
 			int frames = 0;
-			float timeStep;
 
 			startTimer(&mTimer);
 			while (!quit){

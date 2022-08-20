@@ -30,12 +30,13 @@ typedef struct{
     float playerDist;
     bool state;
     int type;
-    LTexture *texture;
+    LTexture **texture;
+    int n_texts;
 }Sprite;
 
-extern Sprite *Lsprites[6];
+extern Sprite *Lsprites[7];
 
-Sprite* sprite(float x, float y, float z, float playerDist, bool state, int type, LTexture *texture);
+Sprite* sprite(float x, float y, float z, float playerDist, bool state, int type, LTexture **texture, int n_texts);
 
 #define n_sprites (sizeof Lsprites / sizeof *Lsprites)
 

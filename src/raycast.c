@@ -261,9 +261,10 @@ void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth){
 
 // SPRITE FUNCS
 
-Sprite* sprite(float x, float y, float z, float playerDist,bool state, int type, LTexture *texture){
+Sprite* sprite(float x, float y, float z, float playerDist,bool state, int type, LTexture **texture, int n_texts){
 	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
-	Sprite temp = {x, y, z, playerDist, state, type, texture};
+	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
+	Sprite temp = {x, y, z, playerDist, state, type, result->texture, n_texts};
 	*result = temp;
 	return result;
 }
@@ -287,8 +288,11 @@ void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow,Player *player){
 		double spriteX = Lsprites[s]->x - player->x;
 		double spriteY = Lsprites[s]->y - player->y;
 		double spriteZ = Lsprites[s]->z;
-
+		
+		int txt_x;
 		float angle = player->angle;
+		float txt_ang = fixAngle(-atan2(spriteY, spriteX));
+		txt_x = (int)((txt_ang)) % Lsprites[s]->n_texts;
 
 		float CS=cos(angle), SN=sin(angle); //rotate around origin
 		float a=spriteY*CS+spriteX*SN; 
@@ -314,7 +318,7 @@ void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow,Player *player){
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255,255);
 			SDL_Rect text = {j,0,1,64};
 			if(i > 0 && i< 960 && b<depth[(int)i/2]){
-				renderTexture(gRenderer, Lsprites[s]->texture, i,spriteY*8, &text,1,scale*16);
+				renderTexture(gRenderer, Lsprites[s]->texture[txt_x], i,spriteY*8, &text,1,scale*16);
 			}
 			j+=diff;
 		}
