@@ -18,7 +18,7 @@ Player* player;
 
 float mouseX;
 float mouseY;
-float time = 0;
+float time = 10000;
 
 float avgFPS;
 
@@ -42,8 +42,8 @@ bool init(){
 	player->x = 150;
 	player->y = 400;
 	player->angle = 0;
-	player->deltaX = cos(player->angle)*5;
-	player->deltaY = sin(player->angle)*5;
+	player->deltaX = cos(player->angle);
+	player->deltaY = sin(player->angle);
 
 	Lsprites[0] = sprite(1.5*64, 5*64,-20,0,true,1,NULL);
 	Lsprites[1] = sprite(3.5*64, 5*64,-20,0,true,1,NULL);
