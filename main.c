@@ -148,7 +148,7 @@ void mouse_movement(SDL_Event *e){
     }
 }
 
-bool events(SDL_Event *e,Timer *stepTimer, float timeStep){
+bool events(SDL_Event *e){
 	// Handle events on queue
 	while (SDL_PollEvent(e) != 0)
 	{
@@ -257,16 +257,13 @@ int main(int argc, char *args[])
 			bool quit = false;
 			SDL_Event e;
 			Timer mTimer = timer(0,0,false,false);
-			Timer stepTimer = timer(0,0,false,false);
 			int frames = 0;
 			float timeStep;
 
 			startTimer(&mTimer);
-			startTimer(&stepTimer);
 			while (!quit){
 				//Calculate time step
-				timeStep = getTimerTicks(&stepTimer) *0.2;
-				quit = events(&e, &stepTimer, timeStep);
+				quit = events(&e);
 				playerMovement();
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
@@ -275,7 +272,6 @@ int main(int argc, char *args[])
 				    avgFPS = 0;
 				}
 				// printf("%f\n", avgFPS);
-				startTimer(&stepTimer);
 				display();
 				frames++;
 			}

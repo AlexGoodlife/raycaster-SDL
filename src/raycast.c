@@ -93,8 +93,6 @@ float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, f
 		if(mapPos > 0 && mapPos< mapX*mapY && mapWalls[mapPos] >0){ // hit wall
 			*horizontalX = *rayX;
 			*horizontalY = *rayY;
-			// distanceH = distance(player->x, player->y, *horizontalX, *horizontalY);
-			// distanceH=cos((rayAngle))*((*rayX)-player->x)-sin((rayAngle))*((*rayY)-player->y);
 			distanceH = distanceAngle(rayAngle, player->x, player->y, *rayX, *rayY);
 			dof = 8;
 			*horizontalMapText = mapWalls[mapPos]-1;
@@ -145,8 +143,6 @@ float renderVerticalRays(Player *player, float rayAngle, float *verticalX, float
 		if(mapPos > 0 && mapPos< mapX*mapY && mapWalls[mapPos] >0){ // hit wall
 			*verticalX = *rayX;
 			*verticalY = *rayY;
-			// distanceV = distance(player->x, player->y, *verticalX, *verticalY);
-			// distanceV= cos(rayAngle)*((*rayX)-player->x)-sin(rayAngle)*((*rayY)-player->y);
 			distanceV = distanceAngle(rayAngle, player->x, player->y, *rayX, *rayY);
 			dof = 8;
 			*verticalMapText = mapWalls[mapPos]-1;
@@ -294,13 +290,13 @@ void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow,Player *player){
 
 		float angle = player->angle;
 
-
 		float CS=cos(angle), SN=sin(angle); //rotate around origin
 		float a=spriteY*CS+spriteX*SN; 
 		float b=spriteX*CS-spriteY*SN; 
 		spriteX=a; spriteY=b;
 
-		spriteX= (spriteX*108.0/spriteY)+(120/2); //convert to screen x,y
+
+		spriteX= (spriteX*108.0/spriteY)+(120/2);
 		spriteY=(spriteZ*108.0/spriteY)+( 80/2);
 
 		float scale = 32*80/b;
@@ -309,27 +305,19 @@ void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow,Player *player){
 		} 
 		if(scale>240){ 
 			scale=240;
-		}  
+		}
 
-		float j = (spriteX + scale/2) - (spriteX-scale/2);
-		// float diff = scale == 0 ? 0 : 64/scale;
-		// printf("diff: %f\n", diff);
-		j = 0;
+		float j = 0;
 		float diff = scale == 0 ? 0 : 64/(scale*16);
-		// printf("%f\n", diff);
-		
-		
-
-		// SDL_Rect test = {0,0,64,64};
-		// renderTexture(gRenderer, Lsprites[0]->texture,(spriteX-scale/2)*8, spriteY*8, &test,scale*8,scale*8);
-
-		for(int i = (spriteX-scale/2)*8; i < (((spriteX-scale/2)*8))+scale*16;i++){
-			SDL_Rect test = {j,0,1,64};
+			
+		for(int i = (spriteX-scale)*8; i < (((spriteX-scale)*8))+scale*16;i++){
+			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255,255);
+			SDL_Rect text = {j,0,1,64};
 			if(i > 0 && i< 960 && b<depth[(int)i/2]){
-				renderTexture(gRenderer, Lsprites[s]->texture, i,spriteY*8, &test,1,scale*16);
+				renderTexture(gRenderer, Lsprites[s]->texture, i,spriteY*8, &text,1,scale*16);
 			}
 			j+=diff;
-		} 
+		}
 
 	}
 
