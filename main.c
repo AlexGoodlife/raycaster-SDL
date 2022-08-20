@@ -96,9 +96,6 @@ bool init(){
 			}
 		}
 	}
-	Uint32 format = SDL_GetWindowPixelFormat( gWindow );
-	SDL_PixelFormat* mappingFormat = SDL_AllocFormat( format );
-	printf("%d\n",mappingFormat->Amask );
 	return success;
 }
 
