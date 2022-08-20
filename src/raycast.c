@@ -269,6 +269,15 @@ Sprite* sprite(float x, float y, float z, float playerDist,bool state, int type,
 	return result;
 }
 
+void freeSprite(Sprite* spr){
+	for(int i = 0; i < spr->n_texts;i++){
+		SDL_DestroyTexture(spr->texture[i]->texture);
+		free(spr->texture[i]);
+	}
+	free(spr->texture);
+	free(spr);
+}
+
 int cmp_sprites(const void *x, const void *y){
 	return -((*(Sprite**)x)->playerDist - (*(Sprite**)y)->playerDist);
 }
@@ -282,7 +291,7 @@ void sortSprites(Player *player){
 
 }
 
-void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow,Player *player){
+void drawSprites(SDL_Renderer *gRenderer,Player *player){
 	sortSprites(player);
 	for(int s = 0; s < n_sprites;s++){
 		double spriteX = Lsprites[s]->x - player->x;

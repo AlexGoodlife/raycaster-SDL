@@ -38,9 +38,12 @@ extern Sprite *Lsprites[7];
 
 Sprite* sprite(float x, float y, float z, float playerDist, bool state, int type, LTexture **texture, int n_texts);
 
+void freeSprite(Sprite* spr);
+
 #define n_sprites (sizeof Lsprites / sizeof *Lsprites)
 
-void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow, Player *player);
+void drawSprites(SDL_Renderer *gRenderer,Player *player);
+
 
 
 #endif

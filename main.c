@@ -224,7 +224,7 @@ void display(){
 	//draw rays and walls
 	drawRays(gRenderer, player);
 
-	drawSprites(gRenderer, gWindow, player);
+	drawSprites(gRenderer,player);
 
 	// //drawing mapWalls
 	// drawMap2D(gRenderer);
@@ -243,10 +243,10 @@ void close(){
 	gRenderer = NULL;
 	gWindow = NULL;
 	for(int i = 0; i < n_textures;i++)
-		free(textures[i]);
+		freeTexture(textures[i]);
 	free(player);
 	for(int i = 0; i < n_sprites;i++)
-		free(Lsprites[i]);
+		freeSprite(Lsprites[i]);
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();

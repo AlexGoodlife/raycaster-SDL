@@ -73,5 +73,7 @@ void lockTexture(LTexture* texture);
 
 void unlockTexture(LTexture* texture);
 
+void freeTexture(LTexture* texture);
+
 
 #endif

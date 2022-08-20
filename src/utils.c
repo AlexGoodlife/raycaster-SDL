@@ -219,6 +219,11 @@ void unlockTexture(LTexture* texture)
 
 }
 
+void freeTexture(LTexture* texture){
+	SDL_DestroyTexture(texture->texture);
+	free(texture);
+}
+
 
 bool is_perpendicular(float ax, float ay, float bx, float by){
 	return (int)((ax * bx) + (ay * by)) == 0;
