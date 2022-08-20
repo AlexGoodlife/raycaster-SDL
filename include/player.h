@@ -15,7 +15,7 @@ enum DIRECTION {FORWARD, BACKWARDS, RIGHT, LEFT};
 
 void drawPlayer(SDL_Renderer* gRenderer, Player* player);
 
-void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction);
+void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction,double rotSpeed);
 
 void playerLook(Player *player, int direction, double rotSpeed);
 

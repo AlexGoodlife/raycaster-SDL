@@ -152,10 +152,6 @@ bool events(SDL_Event *e,Timer *stepTimer, float timeStep){
 	// Handle events on queue
 	while (SDL_PollEvent(e) != 0)
 	{
-		float oldTime = time;
-		time = SDL_GetTicks();
-		double frameTime = (time - oldTime) / 1000.0;
-		double rotSpeed = frameTime * 2.0; //the constant value is in radians/second
 		// User requests quit
 		if (e->type == SDL_QUIT)
 		{
@@ -166,45 +162,49 @@ bool events(SDL_Event *e,Timer *stepTimer, float timeStep){
         {	
 			//mouse_movement(e);
         }
-        else{
-            const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
-            if( currentKeyStates[ SDL_SCANCODE_W ] )
-            {
-				if(checkColisions(gRenderer, player,0))
-					movePlayer(gRenderer, player, FORWARD);
-            }
-            if( currentKeyStates[ SDL_SCANCODE_S ] )
-            {
-				if(checkColisions(gRenderer, player,PI))
-					movePlayer(gRenderer, player, BACKWARDS);
-            }
-            if( currentKeyStates[ SDL_SCANCODE_Q ] )
-			{
-				playerLook(player, LEFT, rotSpeed);
-            }
-            if( currentKeyStates[ SDL_SCANCODE_E] )
-            {
-				playerLook(player, RIGHT, rotSpeed);
-            }
-			if( currentKeyStates[ SDL_SCANCODE_D] )
-            {
-				if(checkColisions(gRenderer, player,-PI/2))
-					movePlayer(gRenderer, player, RIGHT);
-            }
-			if( currentKeyStates[ SDL_SCANCODE_A] )
-            {
-				if(checkColisions(gRenderer, player,PI/2))
-					movePlayer(gRenderer, player, LEFT);
-            }
-            if(currentKeyStates[SDL_SCANCODE_F])
-			{
-				openDoor(player);
-            }
-        }
 	}
 	return false;
 }
 
+void playerMovement(){
+	float oldTime = time;
+	time = SDL_GetTicks();
+	double frameTime = (time - oldTime);
+	double rotSpeed = frameTime; //the constant value is in radians/second
+	const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
+    if( currentKeyStates[ SDL_SCANCODE_W ] )
+        {
+			if(checkColisions(gRenderer, player,0))
+				movePlayer(gRenderer, player, FORWARD, rotSpeed);
+        }
+    if( currentKeyStates[ SDL_SCANCODE_S ] )
+        {
+			if(checkColisions(gRenderer, player,PI))
+				movePlayer(gRenderer, player, BACKWARDS,rotSpeed);
+        }
+	if( currentKeyStates[ SDL_SCANCODE_Q ] )
+	{
+		playerLook(player, LEFT, rotSpeed);
+    }
+    if( currentKeyStates[ SDL_SCANCODE_E] )
+    {
+		playerLook(player, RIGHT, rotSpeed);
+    }
+	if( currentKeyStates[ SDL_SCANCODE_D] )
+    {
+		if(checkColisions(gRenderer, player,-PI/2))
+			movePlayer(gRenderer, player, RIGHT,rotSpeed);
+    }
+	if( currentKeyStates[ SDL_SCANCODE_A] )
+    {
+		if(checkColisions(gRenderer, player,PI/2))
+			movePlayer(gRenderer, player, LEFT, rotSpeed);
+    }
+    if(currentKeyStates[SDL_SCANCODE_F])
+	{
+		openDoor(player);
+    }
+}
 
 void display(){
 	// Clear screen
@@ -267,6 +267,7 @@ int main(int argc, char *args[])
 				//Calculate time step
 				timeStep = getTimerTicks(&stepTimer) *0.2;
 				quit = events(&e, &stepTimer, timeStep);
+				playerMovement();
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
 				if( avgFPS > 2000000 )
