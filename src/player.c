@@ -32,7 +32,7 @@ void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction){
 	int iPlayerYSub = (int)(player->y - yOffset) >> 6;
     switch (direction)
     {
-    case FORWARD:
+    case FORWARD:{
         if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
 		    player->x += player->deltaX; //* timeStep; //*1/avgFPS;
 	    }
@@ -40,8 +40,8 @@ void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction){
 		    player->y += player->deltaY; //*timeStep; //* 1/avgFPS;
 	    }
         break;
-    
-    case BACKWARDS:
+	}
+    case BACKWARDS:{
         if(mapWalls[iPlayerY * mapX + iPlayerXSub] == 0){
 			player->x -= player->deltaX; //*timeStep; //* 0.2 * fps;
 		}
@@ -49,36 +49,12 @@ void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction){
 			player->y -= player->deltaY; //*timeStep; //* 0.2 * fps;
 		}
         break;
-        
-    case RIGHT:
-        xOffset = 0;
+	} 
+    case RIGHT:{
+		xOffset = 0;
 		yOffset = 0;
-		float playerDeltaX_temp = cos(fixAngle(player->angle + PI/2))*5;
-        float playerDeltaY_temp = sin(fixAngle(player->angle+ PI/2))*5;
-		if(playerDeltaX_temp < 0)
-			xOffset -= 20;
-		else
-		xOffset = 20;
-		if(playerDeltaY_temp < 0)
-			yOffset -= 20;
-		else
-			yOffset = 20;
-		iPlayerXAdd = (int)(player->x + xOffset) >> 6;
-
-		iPlayerYAdd = (int)(player->y + yOffset) >> 6;
-        if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
-			player->x += playerDeltaX_temp/2; //* timeStep; //*1/avgFPS;
-		}
-		if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
-			player->y += playerDeltaY_temp/2; //*timeStep; //* 1/avgFPS;
-		}
-        break;
-    
-    case LEFT:
-        xOffset = 0;
-		yOffset = 0;
-		playerDeltaX_temp = cos(fixAngle(player->angle - PI/2))*5;
-        playerDeltaY_temp = sin(fixAngle(player->angle - PI/2))*5;
+		float playerDeltaX_temp = cos(fixAngle(player->angle - PI/2))*5;
+        float playerDeltaY_temp = -sin(fixAngle(player->angle - PI/2))*5;
 		if(playerDeltaX_temp < 0)
 			xOffset -= 20;
 		else
@@ -96,23 +72,47 @@ void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction){
 		if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
 			player->y += playerDeltaY_temp/2;// *timeStep; //* 1/avgFPS;
 		}
-    
-    default:
         break;
+	}
+    
+    case LEFT:{
+        xOffset = 0;
+		yOffset = 0;
+		float playerDeltaX_temp = cos(fixAngle(player->angle + PI/2))*5;
+        float playerDeltaY_temp = -sin(fixAngle(player->angle+ PI/2))*5;
+		if(playerDeltaX_temp < 0)
+			xOffset -= 20;
+		else
+		xOffset = 20;
+		if(playerDeltaY_temp < 0)
+			yOffset -= 20;
+		else
+			yOffset = 20;
+		iPlayerXAdd = (int)(player->x + xOffset) >> 6;
+
+		iPlayerYAdd = (int)(player->y + yOffset) >> 6;
+        if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
+			player->x += playerDeltaX_temp/2; //* timeStep; //*1/avgFPS;
+		}
+		if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
+			player->y += playerDeltaY_temp/2; //*timeStep; //* 1/avgFPS;
+		}
+	}
     }
 
 }
 
-void playerLook(Player *player, int direction){
-    if(direction == 3){
-        player->angle = fixAngle(player->angle -0.1);
+void playerLook(Player *player, int direction, double rotSpeed){
+	// printf("%f\n", rotSpeed);
+    if(direction == LEFT){
+        player->angle = fixAngle(player->angle +0.05);
         player->deltaX = cos(player->angle)*5;
-        player->deltaY = sin(player->angle)*5;
+        player->deltaY = -sin(player->angle)*5;
     }
     else{
-        player->angle = fixAngle(player->angle +0.1);
+        player->angle = fixAngle(player->angle -0.05);
         player->deltaX = cos(player->angle)*5;
-        player->deltaY = sin(player->angle)*5;
+        player->deltaY = -sin(player->angle)*5;
     }
 }
 
@@ -134,3 +134,5 @@ void openDoor(Player *player){
     if(mapWalls[iPlayerYAdd*mapX + iPlayerXAdd] == 4)
         mapWalls[iPlayerYAdd*mapX + iPlayerXAdd] = 0;
 }
+
+

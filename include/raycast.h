@@ -2,11 +2,8 @@
 #ifndef RAYCAST_H
 #define RAYCAST_H
 
-#include <SDL.h>
-#include "world.h"
-#include "utils.h"
-#include "player.h"
 
+#include "player.h"
 
 //Raycasting main function
 void drawRays(SDL_Renderer *gRenderer, Player *player);
@@ -24,5 +21,25 @@ float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, f
 bool checkColisions(SDL_Renderer *gRenderer, Player *player,float directionOffset);
 
 void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth);
+
+
+typedef struct{
+    float x;
+    float y;
+    float z;
+    float playerDist;
+    bool state;
+    int type;
+    LTexture *texture;
+}Sprite;
+
+extern Sprite *Lsprites[6];
+
+Sprite* sprite(float x, float y, float z, float playerDist, bool state, int type, LTexture *texture);
+
+#define n_sprites (sizeof Lsprites / sizeof *Lsprites)
+
+void drawSprites(SDL_Renderer *gRenderer, SDL_Window* gWindow, Player *player);
+
 
 #endif

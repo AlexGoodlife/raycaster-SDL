@@ -24,6 +24,11 @@ float max(float x, float y);
 // Min between 2 floats
 float min(float x,float y);
 
+float simetricalAngle(float angle);
+
+float distanceAngle(float angle, float ax, float ay, float bx, float by);
+
+bool is_perpendicular(float ax, float ay, float bx, float by);
 
 //TIMER AND TIMER FUNCS
 
@@ -50,14 +55,23 @@ Uint32 getTimerTicks(Timer *mTimer);
 
 typedef struct{
     SDL_Texture* texture;
+    void* mPixels;
+	int mPitch;
     int width;
     int height;
 }LTexture;
 
-LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer);
+LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer,SDL_Window* gWindow);
+
+LTexture* ltexture(SDL_Texture* texture, void*mPixels, int mPitch, int width, int height);
 
 void renderTexture(SDL_Renderer* gRenderer, LTexture* texture,int x, int y, SDL_Rect* clip,int width, int height);
 
+void renderTextureF(SDL_Renderer* gRenderer,LTexture* mtexture, float x, float y, SDL_Rect* clip, float width, float height);
+
+void lockTexture(LTexture* texture);
+
+void unlockTexture(LTexture* texture);
 
 
 #endif

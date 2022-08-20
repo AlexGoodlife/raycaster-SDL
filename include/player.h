@@ -1,7 +1,6 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "utils.h"
 #include "world.h"
 
 typedef struct{
@@ -18,7 +17,7 @@ void drawPlayer(SDL_Renderer* gRenderer, Player* player);
 
 void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction);
 
-void playerLook(Player *player, int direction);
+void playerLook(Player *player, int direction, double rotSpeed);
 
 void openDoor(Player *player);
 

@@ -6,9 +6,9 @@
 #include <SDL.h>
 #include "utils.h"
 
-int mapX;
-int mapY;
-int blockSize;
+extern int mapX;
+extern int mapY;
+extern int blockSize;
 
 // Wall map
 extern int mapWalls[];
@@ -21,11 +21,7 @@ extern int mapCeiling[];
 
 void drawMap2D(SDL_Renderer *gRenderer);
 
-// LTexture *gSpriteSheetTexture;
-
-SDL_Rect gSprites[4];
-
-LTexture* textures[3];
+extern LTexture* textures[3];
 
 #define n_textures (sizeof textures / sizeof *textures)
 

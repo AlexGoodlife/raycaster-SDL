@@ -1,6 +1,4 @@
 
-#include <SDL.h>
-#include <SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -13,10 +11,14 @@ const int SCREEN_HEIGHT = 640;
 #define CTR_X (SCREEN_WIDTH / 2)
 #define CTR_Y (SCREEN_HEIGHT / 2)
 
+LTexture* textures[3];
+Sprite* Lsprites[6];
+
 Player* player;
 
 float mouseX;
 float mouseY;
+float time = 0;
 
 float avgFPS;
 
@@ -29,18 +31,27 @@ SDL_Surface *gScreenSurface = NULL;
 //the renderer
 SDL_Renderer *gRenderer = NULL;
 
+FILE *f;
 
 bool init(){
 	// Initialization flag
 	bool success = true;
 
 	//initialize player
-	player = malloc(sizeof(Player));
-	player->x = 300;
-	player->y = 300;
+	player = (Player*)malloc(sizeof(Player));
+	player->x = 150;
+	player->y = 400;
 	player->angle = 0;
 	player->deltaX = cos(player->angle)*5;
 	player->deltaY = sin(player->angle)*5;
+
+	Lsprites[0] = sprite(1.5*64, 5*64,-20,0,true,1,NULL);
+	Lsprites[1] = sprite(3.5*64, 5*64,-20,0,true,1,NULL);
+	Lsprites[2] = sprite(2.5*64, 5*64,-20,0,true,1,NULL);
+	Lsprites[3] = sprite(2.5*64, 4.6*64,-20,0,true,1,NULL);
+	Lsprites[4] = sprite(2.5*64, 5.4*64,-20,0,true,1,NULL);
+	Lsprites[5] = sprite(3.5*64, 6.5*64,-20,0,true,1,NULL);
+
 
 	// Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -67,7 +78,7 @@ bool init(){
 			}
 			else
 			{
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
 				int imgFlags = IMG_INIT_PNG;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
 				{
@@ -76,7 +87,7 @@ bool init(){
 				}
 				else
 				{
-					SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0);
+					SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0xFF);
 					SDL_SetRelativeMouseMode(SDL_TRUE);
 					//Get window surface
 					gScreenSurface = SDL_GetWindowSurface( gWindow );
@@ -84,6 +95,9 @@ bool init(){
 			}
 		}
 	}
+	Uint32 format = SDL_GetWindowPixelFormat( gWindow );
+	SDL_PixelFormat* mappingFormat = SDL_AllocFormat( format );
+	printf("%d\n",mappingFormat->Amask );
 	return success;
 }
 
@@ -92,9 +106,16 @@ bool loadMedia(){
 	bool success = true;
 
 	//Load sprite texture
-	textures[0] = loadFromFile("textures/wall.png", gRenderer);
-	textures[1] = loadFromFile("textures/wall_2.png", gRenderer);
-	textures[2] = loadFromFile("textures/wall_3.png",gRenderer);
+	textures[0] = loadFromFile("textures/greystone.png", gRenderer, gWindow);
+	textures[1] = loadFromFile("textures/bluestone.png", gRenderer,gWindow);
+	textures[2] = loadFromFile("textures/colorstone.png",gRenderer,gWindow);
+
+	Lsprites[0]->texture = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
+	Lsprites[1]->texture = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);
+	Lsprites[2]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[3]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[4]->texture = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	Lsprites[5]->texture = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
 	for(int i = 0; i < n_textures; i++){
 		if(textures[i] == NULL){
 		success = false;
@@ -127,10 +148,14 @@ void mouse_movement(SDL_Event *e){
     }
 }
 
-bool events(SDL_Event *e, float timeStep){
+bool events(SDL_Event *e,Timer *stepTimer, float timeStep){
 	// Handle events on queue
 	while (SDL_PollEvent(e) != 0)
 	{
+		float oldTime = time;
+		time = SDL_GetTicks();
+		double frameTime = (time - oldTime) / 1000.0;
+		double rotSpeed = frameTime * 2.0; //the constant value is in radians/second
 		// User requests quit
 		if (e->type == SDL_QUIT)
 		{
@@ -139,7 +164,7 @@ bool events(SDL_Event *e, float timeStep){
 
         if (e->type == SDL_MOUSEMOTION)
         {	
-			mouse_movement(e);
+			//mouse_movement(e);
         }
         else{
             const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
@@ -148,30 +173,30 @@ bool events(SDL_Event *e, float timeStep){
 				if(checkColisions(gRenderer, player,0))
 					movePlayer(gRenderer, player, FORWARD);
             }
-            else if( currentKeyStates[ SDL_SCANCODE_S ] )
+            if( currentKeyStates[ SDL_SCANCODE_S ] )
             {
 				if(checkColisions(gRenderer, player,PI))
 					movePlayer(gRenderer, player, BACKWARDS);
             }
-            else if( currentKeyStates[ SDL_SCANCODE_Q ] )
+            if( currentKeyStates[ SDL_SCANCODE_Q ] )
 			{
-				playerLook(player, LEFT);
+				playerLook(player, LEFT, rotSpeed);
             }
-            else if( currentKeyStates[ SDL_SCANCODE_E] )
+            if( currentKeyStates[ SDL_SCANCODE_E] )
             {
-				playerLook(player, RIGHT);
+				playerLook(player, RIGHT, rotSpeed);
             }
-			else if( currentKeyStates[ SDL_SCANCODE_D] )
-            {
-				if(checkColisions(gRenderer, player,PI/2))
-					movePlayer(gRenderer, player, RIGHT);
-            }
-			else if( currentKeyStates[ SDL_SCANCODE_A] )
+			if( currentKeyStates[ SDL_SCANCODE_D] )
             {
 				if(checkColisions(gRenderer, player,-PI/2))
+					movePlayer(gRenderer, player, RIGHT);
+            }
+			if( currentKeyStates[ SDL_SCANCODE_A] )
+            {
+				if(checkColisions(gRenderer, player,PI/2))
 					movePlayer(gRenderer, player, LEFT);
             }
-            else if(currentKeyStates[SDL_SCANCODE_F])
+            if(currentKeyStates[SDL_SCANCODE_F])
 			{
 				openDoor(player);
             }
@@ -183,18 +208,20 @@ bool events(SDL_Event *e, float timeStep){
 
 void display(){
 	// Clear screen
-	SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0);
+	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 	SDL_RenderClear(gRenderer);
-
-	//drawing mapWalls
-	// drawMap2D(gRenderer);
-
-	//draw player
-	// drawPlayer(gRenderer, player);
 
 	drawFloors(gRenderer, SCREEN_HEIGHT, SCREEN_WIDTH);
 	//draw rays and walls
 	drawRays(gRenderer, player);
+
+	drawSprites(gRenderer, gWindow, player);
+
+	// //drawing mapWalls
+	// drawMap2D(gRenderer);
+
+	// //draw player
+	// drawPlayer(gRenderer, player);
 
 	// Update screen
 	SDL_RenderPresent(gRenderer);
@@ -209,6 +236,7 @@ void close(){
 	for(int i = 0; i < n_textures;i++)
 		free(textures[i]);
 	free(player);
+	free(Lsprites[0]);
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
@@ -216,7 +244,7 @@ void close(){
 
 int main(int argc, char *args[])
 {
-	printf("%d\n", n_textures);
+	f = fopen("log.txt", "w");
 	if (!init()){
 		printf("Failed to initialize!\n");
 	}
@@ -234,10 +262,11 @@ int main(int argc, char *args[])
 			float timeStep;
 
 			startTimer(&mTimer);
+			startTimer(&stepTimer);
 			while (!quit){
 				//Calculate time step
 				timeStep = getTimerTicks(&stepTimer) *0.2;
-				quit = events(&e, timeStep);
+				quit = events(&e, &stepTimer, timeStep);
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
 				if( avgFPS > 2000000 )
