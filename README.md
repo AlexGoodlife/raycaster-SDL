@@ -17,22 +17,28 @@
 
 ## Todo
    - [ ] Floor and ceiling textures (Performance heavy)
-   - [ ] Directional Sprites
-   - [ ] Improve movement in general
+   - [ ] Directional Sprites (done ish)
    - [ ] Proper doors
    - [ ] Gameplay(??)
 
 
-## Reference
+## References
 Alot of the code was direct reference from 3DSage's youtube series on raycasters
  - [Make your own Raycaster Part 1](https://www.youtube.com/watch?v=gYRrGTC7GtA)
     - by [3DSage](https://www.youtube.com/c/3DSage)
+
+SDL initialization and event handling from LazyFoo's tutorials
+   - [SDL Tutorials](https://lazyfoo.net/tutorials/SDL/)
+
+Getting my head around concepts was much easier with this tutorial
+ - [Lode's Computer Graphics tutorials](https://lodev.org/cgtutor/index.html)
 
 Alot of the math was derived from this video
  - [Wolfenstein 3D's map renderer](https://www.youtube.com/watch?v=eOCQfxRQ2pY&list=WL&index=124)
     - by [Matt Godbolt](https://www.youtube.com/c/MattGodbolt)
 
-SDL initialization and event handling from LazyFoo's tutorials
-   -[SDL Tutorials](https://lazyfoo.net/tutorials/SDL/)
+
+
+
 
 
