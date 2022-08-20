@@ -5,17 +5,22 @@
  ![Sample Image](images/raycaster_new.PNG)
 
  ![Fullscreen with Textures](images/wolfenstein.PNG)
-   I made this small raycasting engine as a way to learn SDL and also some graphical computing
+
+ ![Sprites Added](images/sprites.PNG)
+
+   I made this small raycasting engine as a way to learn SDL and also some graphical computing, currently it serves as a pseudo Wolfenstein3D clone
 
    **THIS ENGINE IS IN DEVELOPMENT**, 
-   I am currently working on optimizing and revamping the engine to be more efficient
+   I am currently working on optimizing and adding features to the engine
 
 
 
 ## Todo
-   - [ ] Floor and ceiling textures
-   - [ ] Sprites
-   - [ ] Improve mouse movement
+   - [ ] Floor and ceiling textures (Performance heavy)
+   - [ ] Directional Sprites
+   - [ ] Improve movement in general
+   - [ ] Proper doors
+   - [ ] Gameplay(??)
 
 
 ## Reference
