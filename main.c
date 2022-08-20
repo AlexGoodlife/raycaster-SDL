@@ -11,7 +11,7 @@ const int SCREEN_HEIGHT = 640;
 #define CTR_X (SCREEN_WIDTH / 2)
 #define CTR_Y (SCREEN_HEIGHT / 2)
 
-LTexture* textures[3];
+LTexture* textures[4];
 Sprite* Lsprites[7];
 
 Player* player;
@@ -40,7 +40,7 @@ bool init(){
 	//initialize player
 	player = (Player*)malloc(sizeof(Player));
 	player->x = 150;
-	player->y = 400;
+	player->y = 300;
 	player->angle = 0;
 	player->deltaX = cos(player->angle);
 	player->deltaY = sin(player->angle);
@@ -110,6 +110,7 @@ bool loadMedia(){
 	textures[0] = loadFromFile("textures/greystone.png", gRenderer, gWindow);
 	textures[1] = loadFromFile("textures/bluestone.png", gRenderer,gWindow);
 	textures[2] = loadFromFile("textures/colorstone.png",gRenderer,gWindow);
+	textures[3] = loadFromFile("textures/eagle.png",gRenderer, gWindow);
 
 	Lsprites[0]->texture[0] = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
 	Lsprites[1]->texture[0] = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);

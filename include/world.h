@@ -21,7 +21,7 @@ extern int mapCeiling[];
 
 void drawMap2D(SDL_Renderer *gRenderer);
 
-extern LTexture* textures[3];
+extern LTexture* textures[4];
 
 #define n_textures (sizeof textures / sizeof *textures)
 
