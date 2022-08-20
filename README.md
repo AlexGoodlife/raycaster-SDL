@@ -4,9 +4,7 @@
 
  ![Sample Image](images/raycaster_new.PNG)
 
- ![Fullscreen with Textures](images/wolfenstein.PNG)
-
- ![Sprites Added](images/sprites.PNG)
+ ![64x64 texture and Sprites Added](images/sprites.PNG)
 
    I made this small raycasting engine as a way to learn SDL and also some graphical computing, currently it serves as a pseudo Wolfenstein3D clone
 
