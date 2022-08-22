@@ -55,6 +55,7 @@ int mapCeiling[]=          //ceiling
  0,0,0,0,0,0,0,0,	
 };
 
+// Draws 2D map grid based on wall map
 void drawMap2D(SDL_Renderer *gRenderer){
 	int x0;
 	int y0;

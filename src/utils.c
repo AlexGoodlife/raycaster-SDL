@@ -2,15 +2,17 @@
 #include <string.h>
 #include "../include/utils.h"
 
-
+// Calculates distance between two points
 float distance(float ax, float ay, float bx, float by){
 	return (bx-ax) * (bx-ax) + (by-ay) * (by-ay);
 }
 
+// Calculates distance between two points relative to an angle
 float distanceAngle(float angle, float ax, float ay, float bx, float by){
 	return cos(angle)*(bx-ax)-sin(angle)*((by)-ay);
 }
 
+//FIxes angle, increments 2PI under 0 and vice versa if over 2PI
 float fixAngle(float angle){
 	if(angle < 0){
 		angle += 2*PI;
@@ -20,7 +22,6 @@ float fixAngle(float angle){
 	}
 	return angle;
 }
-
 
 float simetricalAngle(float angle){
 	if(angle == PI || angle == 0)
@@ -37,7 +38,9 @@ float min(float x,float y){
 }
 
 //Timer functions
+//-----------------------------------------------------------------------------------------------------
 
+//Timer constructor
 Timer timer(Uint32 startTicks, Uint32 stopTicks, bool paused, bool started){
 	Timer result = {startTicks, stopTicks, paused, started};
 	return result;
@@ -89,7 +92,9 @@ Uint32 getTimerTicks(Timer *mTimer){
 
 
 // Texture funcs
+// --------------------------------------------------------------------------------------------------
 
+//Texture constructor
 LTexture* ltexture(SDL_Texture* texture, void*mPixels, int mPitch, int width, int height){
 	LTexture* result = (LTexture*)malloc(sizeof(LTexture));
 	LTexture x = {texture, mPixels, mPitch,width, height};
@@ -97,7 +102,13 @@ LTexture* ltexture(SDL_Texture* texture, void*mPixels, int mPitch, int width, in
 	return result;
 }
 
+//Texture Destructor
+void freeTexture(LTexture* texture){
+	SDL_DestroyTexture(texture->texture);
+	free(texture);
+}
 
+//Sets textures transparency color to given rgb values
 void setTransparentColor(SDL_Window* gWindow,LTexture* text, Uint8 r, Uint8 g, Uint8 b){
 		lockTexture(text);
 
@@ -124,7 +135,7 @@ void setTransparentColor(SDL_Window* gWindow,LTexture* text, Uint8 r, Uint8 g, U
 		SDL_FreeFormat( mappingFormat );
 }
 
-
+// Loads image from path and returns LTexture pointer
 LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer,SDL_Window* gWindow){
 	SDL_Texture* newTexture = NULL;
 	LTexture* result = malloc(sizeof(LTexture));
@@ -160,8 +171,7 @@ LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer,SDL_Window* gWi
 
 }
 
-
-
+//Renders texture, in positon x, y, from region of texture given by clip, stretched to variables width and height
 void renderTexture(SDL_Renderer* gRenderer,LTexture* mtexture, int x, int y, SDL_Rect* clip, int width, int height){
     //Set rendering space and render to screen
     SDL_Rect renderQuad = { x, y, mtexture->width, mtexture->height };
@@ -172,6 +182,7 @@ void renderTexture(SDL_Renderer* gRenderer,LTexture* mtexture, int x, int y, SDL
     SDL_RenderCopy( gRenderer, mtexture->texture, clip, &renderQuad );
 }
 
+//Analog function to renderTexture but for float coordinates
 void renderTextureF(SDL_Renderer* gRenderer,LTexture* mtexture, float x, float y, SDL_Rect* clip, float width, float height){
     //Set rendering space and render to screen
     SDL_FRect renderQuad = { x, y, mtexture->width, mtexture->height };
@@ -182,6 +193,7 @@ void renderTextureF(SDL_Renderer* gRenderer,LTexture* mtexture, float x, float y
     SDL_RenderCopyF( gRenderer, mtexture->texture, clip, &renderQuad );
 }
 
+// Locks texture for pixel manipulation
 void lockTexture(LTexture* texture)
 {
 
@@ -201,6 +213,7 @@ void lockTexture(LTexture* texture)
 
 }
 
+//Unlocks texture, to be used after pixel manipulation
 void unlockTexture(LTexture* texture)
 {
 
@@ -218,12 +231,6 @@ void unlockTexture(LTexture* texture)
 	}
 
 }
-
-void freeTexture(LTexture* texture){
-	SDL_DestroyTexture(texture->texture);
-	free(texture);
-}
-
 
 bool is_perpendicular(float ax, float ay, float bx, float by){
 	return (int)((ax * bx) + (ay * by)) == 0;
