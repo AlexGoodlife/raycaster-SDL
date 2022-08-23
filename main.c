@@ -13,6 +13,7 @@ const int SCREEN_HEIGHT = 640;
 
 LTexture* textures[4];
 Sprite* Lsprites[7];
+Sprite* SortedSprites[n_sprites];
 
 Player* player;
 
@@ -31,8 +32,6 @@ SDL_Surface *gScreenSurface = NULL;
 //the renderer
 SDL_Renderer *gRenderer = NULL;
 
-FILE *f;
-
 bool init(){
 	// Initialization flag
 	bool success = true;
@@ -45,13 +44,16 @@ bool init(){
 	player->deltaX = cos(player->angle);
 	player->deltaY = sin(player->angle);
 
-	Lsprites[0] = sprite(1.5*64, 5*64,-20,0,true,1,NULL,1);
-	Lsprites[1] = sprite(3.5*64, 5*64,-20,0,true,1,NULL,1);
-	Lsprites[2] = sprite(2.5*64, 5*64,-20,0,true,1,NULL,1);
-	Lsprites[3] = sprite(2.5*64, 4.6*64,-20,0,true,1,NULL,1);
-	Lsprites[4] = sprite(2.5*64, 5.4*64,-20,0,true,1,NULL,1);
-	Lsprites[5] = sprite(3.5*64, 6.5*64,-20,0,true,1,NULL,1);
-	Lsprites[6] = sprite(4.5*64, 5*64, -20,0,true,1,NULL, 8);
+	BARREL_1 = spriteMapCons(1,0,true,STATIC_COLIDE,NULL,1);
+	LAMP = spriteMapCons(2,0,true,DYNAMIC,NULL,1);
+	PILLAR_1 = spriteMapCons(3,0,true,STATIC_COLIDE,NULL,1);
+	PILLAR_2 = spriteMapCons(4,0,true,STATIC_COLIDE,NULL,1);
+	PILLAR_3 = spriteMapCons(5,0,true,STATIC_COLIDE,NULL,1);
+	ARMOUR_1 = spriteMapCons(6,0,true,STATIC_COLIDE,NULL,1);
+	GUARD_1 = spriteMapCons(7,0,true,DYNAMIC,NULL, 8);
+
+	// memcpy everything in Lsprites to SortedSprites, because we are copying pointers we can do this in init
+	memcpy(SortedSprites, Lsprites, sizeof(Sprite*)*n_sprites);
 
 
 	// Initialize SDL
@@ -103,33 +105,44 @@ bool loadMedia(){
 	//Loading success flag
 	bool success = true;
 
-	//Load sprite texture
+	//Load wall textures
 	textures[0] = loadFromFile("textures/greystone.png", gRenderer, gWindow);
 	textures[1] = loadFromFile("textures/bluestone.png", gRenderer,gWindow);
 	textures[2] = loadFromFile("textures/colorstone.png",gRenderer,gWindow);
 	textures[3] = loadFromFile("textures/eagle.png",gRenderer, gWindow);
 
-	Lsprites[0]->texture[0] = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
-	Lsprites[1]->texture[0] = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);
-	Lsprites[2]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[3]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[4]->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
-	Lsprites[5]->texture[0] = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
+	//Load sprite textures
+	BARREL_1->texture[0] = loadFromFile("sprites/barrel_2.png", gRenderer,gWindow);
+	LAMP->texture[0] = loadFromFile("sprites/greenlight_2.png", gRenderer, gWindow);
+	PILLAR_1->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	PILLAR_2->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	PILLAR_3->texture[0] = loadFromFile("sprites/pillar_3_t.png", gRenderer, gWindow);
+	ARMOUR_1->texture[0] = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
 
-	Lsprites[6]->texture[0] = loadFromFile("sprites/guard/guard_1_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[1] = loadFromFile("sprites/guard/guard_2_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[2] = loadFromFile("sprites/guard/guard_3_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[3] = loadFromFile("sprites/guard/guard_4_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[4] = loadFromFile("sprites/guard/guard_5_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[5] = loadFromFile("sprites/guard/guard_6_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[6] = loadFromFile("sprites/guard/guard_7_t.png", gRenderer, gWindow);
-	Lsprites[6]->texture[7] = loadFromFile("sprites/guard/guard_8_t.png", gRenderer, gWindow);
+	GUARD_1->texture[0] = loadFromFile("sprites/guard/guard_1_t.png", gRenderer, gWindow);
+	GUARD_1->texture[1] = loadFromFile("sprites/guard/guard_2_t.png", gRenderer, gWindow);
+	GUARD_1->texture[2] = loadFromFile("sprites/guard/guard_3_t.png", gRenderer, gWindow);
+	GUARD_1->texture[3] = loadFromFile("sprites/guard/guard_4_t.png", gRenderer, gWindow);
+	GUARD_1->texture[4] = loadFromFile("sprites/guard/guard_5_t.png", gRenderer, gWindow);
+	GUARD_1->texture[5] = loadFromFile("sprites/guard/guard_6_t.png", gRenderer, gWindow);
+	GUARD_1->texture[6] = loadFromFile("sprites/guard/guard_7_t.png", gRenderer, gWindow);
+	GUARD_1->texture[7] = loadFromFile("sprites/guard/guard_8_t.png", gRenderer, gWindow);
 
+	//Check if all textures were loaded properly
 	for(int i = 0; i < n_textures; i++){
 		if(textures[i] == NULL){
 		success = false;
 		}
-	}	
+	}
+
+	//Check if all sprite textures were loaded properly
+	for(int i = 0; i < n_sprites;i++){
+		for(int j = 0; j < Lsprites[i]->n_texts;j++){
+			if(Lsprites[i]->texture[j] == NULL)
+				success = false;
+		}
+	}
+
 	return success;
 }
 
@@ -240,13 +253,24 @@ void close(){
 	// Destroy window
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
+
+	// Point global pointers to NULL
 	gRenderer = NULL;
 	gWindow = NULL;
+
+	// Destroy all textures
 	for(int i = 0; i < n_textures;i++)
 		freeTexture(textures[i]);
+
+	// Free Player
 	free(player);
-	for(int i = 0; i < n_sprites;i++)
+
+	//Free both sprite arrays
+	for(int i = 0; i < n_sprites;i++){
 		freeSprite(Lsprites[i]);
+		freeSprite(SortedSprites[i]);
+	}
+
 	// Quit SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
@@ -254,7 +278,6 @@ void close(){
 
 int main(int argc, char *args[])
 {
-	f = fopen("log.txt", "w");
 	if (!init()){
 		printf("Failed to initialize!\n");
 	}
@@ -271,7 +294,6 @@ int main(int argc, char *args[])
 
 			startTimer(&mTimer);
 			while (!quit){
-				//Calculate time step
 				quit = events(&e);
 				playerMovement();
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;

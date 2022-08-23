@@ -37,6 +37,22 @@ float min(float x,float y){
 	return x < y ? x : y;
 }
 
+int findCoord(int* array,int mapX, int mapY, int target, int *yCoord){
+	for(int i = 0; i < mapY;i++){
+		for(int j = 0; j < mapX;j++){
+			if(array[i*mapX + j] == target){
+				*yCoord = i;
+				return j;
+			}
+		}
+	}
+	return -1;
+}
+
+bool is_perpendicular(float ax, float ay, float bx, float by){
+	return (int)((ax * bx) + (ay * by)) == 0;
+}
+
 //Timer functions
 //-----------------------------------------------------------------------------------------------------
 
@@ -232,7 +248,38 @@ void unlockTexture(LTexture* texture)
 
 }
 
-bool is_perpendicular(float ax, float ay, float bx, float by){
-	return (int)((ax * bx) + (ay * by)) == 0;
+// SPRITE FUNCS
+//-----------------------------------------------------------------------------------------------------------------------------------
+
+
+//Sprite constructor
+Sprite* sprite(float x, float y, float z, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
+	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
+	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
+	Sprite temp = {x, y, z, playerDist, state, type, result->texture, n_texts};
+	*result = temp;
+	return result;
 }
+
+//Sprite constructor from map
+Sprite* spriteMapCons(int mapValue, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
+	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
+	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
+	int yCoord = 0;
+	int xCoord = findCoord(mapSprites, mapX, mapY, mapValue,&yCoord);
+	Sprite temp = {(xCoord + 0.5) * blockSize, (yCoord + 0.5) * blockSize, -20, playerDist, state, type, result->texture, n_texts};
+	*result = temp;
+	return result;
+}
+
+// Sprite destructor
+void freeSprite(Sprite* spr){
+	for(int i = 0; i < spr->n_texts;i++){
+		freeTexture(spr->texture[i]);
+	}
+	free(spr->texture);
+	free(spr);
+}
+
+
 

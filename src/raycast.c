@@ -8,6 +8,7 @@ int Zbuffer[480];
 
 //Main Ray drawing function
 void drawRays(SDL_Renderer *gRenderer, Player *player){
+	// Initializing required variables
 	int distanceTotal;
 	float rayX;
 	float rayY;
@@ -269,23 +270,6 @@ void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth){
 // SPRITE FUNCS
 //------------------------------------------------------------------------------------------------------------------
 
-//Sprite constructor
-Sprite* sprite(float x, float y, float z, float playerDist,bool state, int type, LTexture **texture, int n_texts){
-	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
-	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
-	Sprite temp = {x, y, z, playerDist, state, type, result->texture, n_texts};
-	*result = temp;
-	return result;
-}
-
-// Sprite destructor
-void freeSprite(Sprite* spr){
-	for(int i = 0; i < spr->n_texts;i++){
-		freeTexture(spr->texture[i]);
-	}
-	free(spr->texture);
-	free(spr);
-}
 
 // Sprite cmp func for qsort
 int cmp_sprites(const void *x, const void *y){
@@ -295,9 +279,9 @@ int cmp_sprites(const void *x, const void *y){
 // Sprite sorting by distance to player
 void sortSprites(Player *player){
 	for(int i = 0; i < n_sprites;i++){
-		Lsprites[i]->playerDist = distance(Lsprites[i]->x,Lsprites[i]->y,player->x, player->y);
+		SortedSprites[i]->playerDist = distance(SortedSprites[i]->x,SortedSprites[i]->y,player->x, player->y);
 	}
-	qsort(Lsprites, (size_t)n_sprites, sizeof(Sprite*),cmp_sprites);
+	qsort(SortedSprites, (size_t)n_sprites, sizeof(Sprite*),cmp_sprites);
 
 }
 
@@ -308,9 +292,9 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 	sortSprites(player);
 	for(int s = 0; s < n_sprites;s++){
 		//Calculate vector player -> sprite 
-		double spriteX = Lsprites[s]->x - player->x;
-		double spriteY = Lsprites[s]->y - player->y;
-		double spriteZ = Lsprites[s]->z;
+		double spriteX = SortedSprites[s]->x - player->x;
+		double spriteY = SortedSprites[s]->y - player->y;
+		double spriteZ = SortedSprites[s]->z;
 		
 
 		int txt_x;
@@ -319,7 +303,7 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 		float txt_ang = fixAngle(-atan2(spriteY, spriteX));
 
 		//round angle to nearest indexed texture in sprite texture array
-		txt_x = (int)((txt_ang)) % Lsprites[s]->n_texts;
+		txt_x = (int)((txt_ang)) % SortedSprites[s]->n_texts;
 
 		float CS=cos(angle), SN=sin(angle); //rotate around origin
 
@@ -351,7 +335,7 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255,255);
 			SDL_Rect text = {j,0,1,64};
 			if(i > 0 && i< 960 && zDepth<Zbuffer[(int)i/2]){
-				renderTexture(gRenderer, Lsprites[s]->texture[txt_x], i,spriteY*8, &text,1,scale*16);
+				renderTexture(gRenderer, SortedSprites[s]->texture[txt_x], i,spriteY*8, &text,1,scale*16);
 			}
 			j+=diff;
 		}

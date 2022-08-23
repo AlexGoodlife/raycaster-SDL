@@ -4,7 +4,6 @@
 
 //Draws player in 2D top down view
 void drawPlayer(SDL_Renderer* gRenderer, Player* player){
-	// Drawing player
 	SDL_SetRenderDrawColor(gRenderer, 255, 255, 0, 0xFF);
 	SDL_Rect playerRect = {player->x, player->y, 8, 8};
 	SDL_RenderFillRect(gRenderer, &playerRect);
@@ -33,77 +32,109 @@ void movePlayer(SDL_Renderer *gRenderer, Player *player, int direction, double r
 	int iPlayerY = (int)player->y >> 6;
 	int iPlayerYAdd = (int)(player->y + yOffset) >> 6;
 	int iPlayerYSub = (int)(player->y - yOffset) >> 6;
+
     switch (direction)
     {
-    case FORWARD:{
-		//check if can move in the X axis to nearest tile
-        if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
-		    player->x += player->deltaX*rotSpeed*0.2;
-	    }
-		//check if can move in the Y axis in nearest tile
-        if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
-		    player->y += player->deltaY*rotSpeed*0.2;
-	    }
-        break;
-	}
-    case BACKWARDS:{
-        if(mapWalls[iPlayerY * mapX + iPlayerXSub] == 0){
-			player->x -= player->deltaX*rotSpeed*0.2;
-		}
-	    if(mapWalls[iPlayerYSub * mapX + iPlayerX] == 0){
-			player->y -= player->deltaY*rotSpeed*0.2;
-		}
-        break;
-	} 
-    case RIGHT:{
-		// New values have to be calculated to take in account rotation
-		xOffset = 0;
-		yOffset = 0;
-		float playerDeltaX_temp = cos(fixAngle(player->angle - PI/2));
-        float playerDeltaY_temp = -sin(fixAngle(player->angle - PI/2));
-		if(playerDeltaX_temp < 0)
-			xOffset -= 20;
-		else
-		    xOffset = 20;
-		if(playerDeltaY_temp < 0)
-			yOffset -= 20;
-		else
-			yOffset = 20;
-		int iPlayerXAdd = (int)(player->x + xOffset) >> 6;
+		case FORWARD:{
+			// Detect for sprite colisions
+			int spriteMapX = mapSprites[iPlayerY * mapX + iPlayerXAdd]-1;
+			int spriteMapY = mapSprites[iPlayerYAdd * mapX + iPlayerX]-1;
 
-		int iPlayerYAdd = (int)(player->y + yOffset) >> 6;
-        if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
-			player->x += playerDeltaX_temp*0.5 *0.2*rotSpeed;
-		}
-		if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
-			player->y += playerDeltaY_temp*0.5 *0.2 * rotSpeed;
-		}
-        break;
-	}
-    
-    case LEFT:{
-        xOffset = 0;
-		yOffset = 0;
-		float playerDeltaX_temp = cos(fixAngle(player->angle + PI/2));
-        float playerDeltaY_temp = -sin(fixAngle(player->angle+ PI/2));
-		if(playerDeltaX_temp < 0)
-			xOffset -= 20;
-		else
-		xOffset = 20;
-		if(playerDeltaY_temp < 0)
-			yOffset -= 20;
-		else
-			yOffset = 20;
-		iPlayerXAdd = (int)(player->x + xOffset) >> 6;
+			bool typeCheckX = spriteMapX == -1 ? true : Lsprites[spriteMapX]->type != STATIC_COLIDE;
+			bool typeCheckY = spriteMapY == -1 ? true : Lsprites[spriteMapY]->type != STATIC_COLIDE;
 
-		iPlayerYAdd = (int)(player->y + yOffset) >> 6;
-        if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0){
-			player->x += playerDeltaX_temp*0.5 * 0.2 * rotSpeed; //* timeStep; //*1/avgFPS;
+
+			//Check if can move in the X axis to nearest tile
+			if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && typeCheckX){
+				player->x += player->deltaX*rotSpeed*0.2;
+			}
+			//Check if can move in the Y axis in nearest tile
+			if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0  && typeCheckY){
+				player->y += player->deltaY*rotSpeed*0.2;
+			}
+			break;
 		}
-		if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0){
-			player->y += playerDeltaY_temp*0.5 * 0.2 * rotSpeed; //*timeStep; //* 1/avgFPS;
+		case BACKWARDS:{
+			// Detect for sprite colisions
+			int spriteMapX = mapSprites[iPlayerY * mapX + iPlayerXSub]-1;
+			int spriteMapY = mapSprites[iPlayerYSub * mapX + iPlayerX]-1;
+
+			bool typeCheckX = spriteMapX == -1 ? true : Lsprites[spriteMapX]->type != STATIC_COLIDE;
+			bool typeCheckY = spriteMapY == -1 ? true : Lsprites[spriteMapY]->type != STATIC_COLIDE;
+
+			if(mapWalls[iPlayerY * mapX + iPlayerXSub] == 0 && typeCheckX){
+				player->x -= player->deltaX*rotSpeed*0.2;
+			}
+			if(mapWalls[iPlayerYSub * mapX + iPlayerX] == 0 && typeCheckY){
+				player->y -= player->deltaY*rotSpeed*0.2;
+			}
+			break;
+		} 
+		case RIGHT:{
+			// New values have to be calculated to take in account rotation
+			xOffset = 0;
+			yOffset = 0;
+			float playerDeltaX_temp = cos(fixAngle(player->angle - PI/2));
+			float playerDeltaY_temp = -sin(fixAngle(player->angle - PI/2));
+			if(playerDeltaX_temp < 0)
+				xOffset -= 20;
+			else
+				xOffset = 20;
+			if(playerDeltaY_temp < 0)
+				yOffset -= 20;
+			else
+				yOffset = 20;
+			int iPlayerXAdd = (int)(player->x + xOffset) >> 6;
+
+			int iPlayerYAdd = (int)(player->y + yOffset) >> 6;
+
+			// Detect for sprite colisions
+			int spriteMapX = mapSprites[iPlayerY * mapX + iPlayerXAdd] - 1;
+			int spriteMapY = mapSprites[iPlayerYAdd * mapX + iPlayerX]-1;
+
+			bool typeCheckX = spriteMapX == -1 ? true : Lsprites[spriteMapX]->type != STATIC_COLIDE;
+			bool typeCheckY = spriteMapY == -1 ? true : Lsprites[spriteMapY]->type != STATIC_COLIDE;
+
+			if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && typeCheckX){
+				player->x += playerDeltaX_temp*0.5 *0.2*rotSpeed;
+			}
+			if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0 && typeCheckY){
+				player->y += playerDeltaY_temp*0.5 *0.2 * rotSpeed;
+			}
+			break;
 		}
-	}
+		
+		case LEFT:{
+			xOffset = 0;
+			yOffset = 0;
+			float playerDeltaX_temp = cos(fixAngle(player->angle + PI/2));
+			float playerDeltaY_temp = -sin(fixAngle(player->angle+ PI/2));
+			if(playerDeltaX_temp < 0)
+				xOffset -= 20;
+			else
+			xOffset = 20;
+			if(playerDeltaY_temp < 0)
+				yOffset -= 20;
+			else
+				yOffset = 20;
+			iPlayerXAdd = (int)(player->x + xOffset) >> 6;
+
+			iPlayerYAdd = (int)(player->y + yOffset) >> 6;
+
+			// Detect for sprite colisions
+			int spriteMapX = mapSprites[iPlayerY * mapX + iPlayerXAdd] - 1;
+			int spriteMapY = mapSprites[iPlayerYAdd * mapX + iPlayerX]-1;
+
+			bool typeCheckX = spriteMapX == -1 ? true : Lsprites[spriteMapX]->type != STATIC_COLIDE;
+			bool typeCheckY = spriteMapY == -1 ? true : Lsprites[spriteMapY]->type != STATIC_COLIDE;
+
+			if(mapWalls[iPlayerY * mapX + iPlayerXAdd] == 0 && typeCheckX){
+				player->x += playerDeltaX_temp*0.5 * 0.2 * rotSpeed;
+			}
+			if(mapWalls[iPlayerYAdd * mapX + iPlayerX] == 0 && typeCheckY){
+				player->y += playerDeltaY_temp*0.5 * 0.2 * rotSpeed;
+			}
+		}
     }
 
 }

@@ -1,8 +1,9 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "world.h"
+#include "utils.h"
 
+//Struct to hold player information
 typedef struct{
     float x;
     float y;
