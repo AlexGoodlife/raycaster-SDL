@@ -9,7 +9,7 @@ int Zbuffer[480];
 //Main Ray drawing function
 void drawRays(SDL_Renderer *gRenderer, Player *player){
 	// Initializing required variables
-	int distanceTotal;
+	float distanceTotal;
 	float rayX;
 	float rayY;
 	float horizontalX;
@@ -169,7 +169,7 @@ float renderVerticalRays(Player *player, float rayAngle, float *verticalX, float
 
 
 //Draws 3D view, line by line, vertically, is called for each line to be drawn
-void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, int distanceTotal, int horizontalMapText, float shading, float rayX, float rayY, int i){
+void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float distanceTotal, int horizontalMapText, float shading, float rayX, float rayY, int i){
 
 	//Calculate angle to fix fisheye
 	float cAngle = player->angle - rayAngle;
@@ -179,8 +179,9 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, int distanc
 	distanceTotal = distanceTotal* cos(cAngle);
 	float lineHeight = (blockSize*640)/distanceTotal;
 	
+	
 	//Calculating offset where the camera is placed 
-	int lineOffset = 320-(lineHeight/2);
+	float lineOffset = 320-(lineHeight/2);
 
 	float textureX;
 
