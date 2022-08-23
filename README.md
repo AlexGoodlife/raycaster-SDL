@@ -12,13 +12,12 @@
    I am currently working on optimizing and adding features to the engine
 
 ## Features
-   - [ ] Fully textured 64x64 walls
+   - [ ] Fully textured 64x64 walls, floors and ceilings (To turn off floors and ceilings undefine TEXT_FLOOR in world.h)
    - [ ] Textured Sprites, static, dynamic and directional
    - [ ] Full colisions for sprites and walls
    - [ ] Smooth keyboard and mouse camera movement
 
 ## Todo
-   - [ ] Floor and ceiling textures (Performance heavy)
    - [ ] Proper doors
    - [ ] Gameplay(??)
 
