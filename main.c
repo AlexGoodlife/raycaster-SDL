@@ -182,7 +182,7 @@ bool events(SDL_Event *e){
 
         if (e->type == SDL_MOUSEMOTION)
         {	
-			//mouse_movement(e);
+			// mouse_movement(e);
         }
 	}
 	return false;
@@ -268,7 +268,6 @@ void close(){
 	//Free both sprite arrays
 	for(int i = 0; i < n_sprites;i++){
 		freeSprite(Lsprites[i]);
-		freeSprite(SortedSprites[i]);
 	}
 
 	// Quit SDL subsystems
