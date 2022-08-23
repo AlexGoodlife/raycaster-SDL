@@ -3,6 +3,12 @@
 #include <stdbool.h>
 #include "../include/raycast.h"
 
+
+#define RESOLUTION_SCALE 2
+#define FOV 60
+#define pixel_width 4
+
+
 // Z buffer to keep track of wall distances
 int Zbuffer[240];
 
@@ -23,7 +29,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 
 	float rayAngle = fixAngle(player->angle + DEGREE*30);
 
-	for(int i = 0; i < 240;i++){
+	for(int i = 0; i < (FOV << RESOLUTION_SCALE);i++){
 
 		verticalMapText = 0;
 		horizontalMapText= 0;
@@ -61,7 +67,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 		//Draw 3D
 		draw3D(gRenderer, player, rayAngle, distanceTotal, horizontalMapText,shading, rayX, rayY,i);
 	
-		rayAngle = fixAngle(rayAngle - DEGREE/4);
+		rayAngle = fixAngle(rayAngle - DEGREE/(1 << RESOLUTION_SCALE));
 	}
 }
 
@@ -206,8 +212,9 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 
 	// draw textured walls 2 pixels wide on screen from 64x64 texture
 	SDL_Rect wall = {textureX, 0, 1,64};
-	renderTexture(gRenderer,textures[horizontalMapText], i*4,lineOffset,&wall, 4, lineHeight);
+	renderTexture(gRenderer,textures[horizontalMapText], i*pixel_width,lineOffset,&wall, pixel_width, lineHeight);
 	
+	#ifdef TEXT_FLOORS
 	// if( i % 2 == 0){
 		// TEXTURE FLOORS KILL PERFORMANCE
 		float rayAngleFix = 1/cos(fixAngle(player->angle - rayAngle));
@@ -215,8 +222,8 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 		for(int j = lineOffset + lineHeight;j < 640;j++){
 			float deltaY = 1/(j - (640/2.0));
 
-			textureX = (player->x + (cos(degree)*158*2*64*deltaY*rayAngleFix));
-			float textureY = (player->y) - (sin(degree)*158*2*64*deltaY*rayAngleFix);
+			textureX = (player->x + (cos(degree)*316*64*deltaY*rayAngleFix));
+			float textureY = (player->y) - (sin(degree)*316*64*deltaY*rayAngleFix);
 
 			SDL_Rect floor = {(int)textureX % 64,(int)textureY % 64, 1,1};
 
@@ -225,11 +232,12 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 			int map2 = mapCeiling[map_i];
 			// printf("%d\n", map);
 			SDL_SetTextureColorMod(textures[map]->texture, 110, 110, 110);
-			renderTexture(gRenderer, textures[map], i*4,j,&floor,4,1);
-			renderTexture(gRenderer, textures[map2], i*4,640-j,&floor,4,1);
+			renderTexture(gRenderer, textures[map], i*pixel_width,j,&floor,pixel_width,1);
+			renderTexture(gRenderer, textures[map2], i*pixel_width,640-j,&floor,pixel_width,1);
 
 		}
 	// }
+	#endif
 
 }
 
@@ -331,8 +339,8 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 		spriteY=zDepth;
 
 		// Convert to screen X and Y
-		spriteX= (spriteX*108.0/spriteY)+(120/2);
-		spriteY=(spriteZ*108.0/spriteY)+( 80/2);
+		spriteX= (spriteX*108.0/spriteY)+(120>>1);
+		spriteY=(spriteZ*108.0/spriteY)+( 80>>1);
 
 		float scale = 32*80/zDepth;
 		if(scale<0){ 
@@ -351,7 +359,7 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 		for(int i = (spriteX-scale)*8; i < (((spriteX-scale)*8))+scale*16;i++){
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255,255);
 			SDL_Rect text = {j,0,1,64};
-			if(i > 0 && i< 960 && zDepth<Zbuffer[(int)i/4]){
+			if(i > 0 && i< 960 && zDepth<Zbuffer[(int)i/pixel_width]){
 				renderTexture(gRenderer, SortedSprites[s]->texture[txt_x], i,spriteY*8, &text,1,scale*16);
 			}
 			j+=diff;
