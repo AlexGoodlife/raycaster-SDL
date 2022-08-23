@@ -53,6 +53,7 @@ bool is_perpendicular(float ax, float ay, float bx, float by){
 	return (int)((ax * bx) + (ay * by)) == 0;
 }
 
+
 //Timer functions
 //-----------------------------------------------------------------------------------------------------
 
@@ -185,6 +186,75 @@ LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer,SDL_Window* gWi
 	//SDL_DestroyTexture(newTexture);
     return result;
 
+}
+
+// LTexture* loadFromText(SDL_Renderer *gRenderer, const char *message, TTF_Font *gFont, SDL_Color textColor, LTexture* previous){
+// 	SDL_Texture* newTexture = NULL;
+// 	LTexture* result = malloc(sizeof(LTexture));
+
+
+//     //Render text surface
+//     SDL_Surface* textSurface = TTF_RenderText_Solid( gFont, message, textColor );
+//     if( textSurface == NULL )
+//     {
+//         printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
+//     }
+//     else
+//     {
+//         //Create texture from surface pixels
+//         result->texture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
+//         if( result->texture= NULL )
+//         {
+//             printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+//         }
+//         else
+//         {
+//             //Get image dimensions
+//             result->width = textSurface->w;
+//             result->height= textSurface->h;
+//         }
+
+//         //Get rid of old surface
+//         SDL_FreeSurface( textSurface );
+//     }
+    
+//     return result;
+
+// }
+
+void loadFromText(SDL_Renderer *gRenderer, LTexture* result, const char *message, TTF_Font *gFont, SDL_Color textColor){
+
+	if(result->texture != NULL){
+		SDL_DestroyTexture( result->texture );
+		result->texture = NULL;
+		result->width = 0;
+		result->height = 0;
+	}
+    //Render text surface
+    SDL_Surface* textSurface = TTF_RenderText_Solid( gFont, message, textColor );
+    if( textSurface == NULL )
+    {
+        printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
+    }
+    else
+    {
+        //Create texture from surface pixels
+        result->texture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
+        if( result->texture == NULL )
+        {
+            printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+        }
+        else
+        {
+            //Get image dimensions
+            result->width = textSurface->w;
+            result->height= textSurface->h;
+        }
+
+        //Get rid of old surface
+        SDL_FreeSurface( textSurface );
+    }
+    
 }
 
 //Renders texture, in positon x, y, from region of texture given by clip, stretched to variables width and height

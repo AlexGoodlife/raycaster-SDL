@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
@@ -68,6 +69,8 @@ typedef struct{
 
 LTexture* loadFromFile(const char *path, SDL_Renderer* gRenderer,SDL_Window* gWindow);
 
+void loadFromText(SDL_Renderer *gRenderer, LTexture* result, const char *message, TTF_Font *gFont, SDL_Color textColor);
+
 LTexture* ltexture(SDL_Texture* texture, void*mPixels, int mPitch, int width, int height);
 
 void renderTexture(SDL_Renderer* gRenderer, LTexture* texture,int x, int y, SDL_Rect* clip,int width, int height);
@@ -100,6 +103,7 @@ typedef struct{
     int n_texts;
 }Sprite;
 
+// Holds sprite members statically 
 extern Sprite *Lsprites[7];
 
 #define n_sprites (sizeof Lsprites / sizeof *Lsprites)

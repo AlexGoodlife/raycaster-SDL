@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "include\raycast.h"
@@ -12,6 +13,7 @@ const int SCREEN_HEIGHT = 640;
 #define CTR_Y (SCREEN_HEIGHT / 2)
 
 LTexture* textures[4];
+LTexture* fpsText;
 Sprite* Lsprites[7];
 Sprite* SortedSprites[n_sprites];
 
@@ -21,6 +23,7 @@ float mouseSens = 0.1;
 
 float avgFPS;
 double frameTime;
+char fpsStr[128];
 
 // The window we'll be rendering to
 SDL_Window *gWindow = NULL;
@@ -30,6 +33,10 @@ SDL_Surface *gScreenSurface = NULL;
 
 //the renderer
 SDL_Renderer *gRenderer = NULL;
+
+TTF_Font * gFont = NULL;
+
+SDL_Color textColor = {255,191,0,255};
 
 bool init(){
 	// Initialization flag
@@ -53,6 +60,10 @@ bool init(){
 
 	// memcpy everything in Lsprites to SortedSprites, because we are copying pointers we can do this in init
 	memcpy(SortedSprites, Lsprites, sizeof(Sprite*)*n_sprites);
+
+	LTexture temp = {NULL, NULL, 0,0};
+	fpsText = malloc(sizeof(LTexture*));
+	*fpsText = temp;
 
 
 	// Initialize SDL
@@ -87,6 +98,11 @@ bool init(){
 					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
 					success = false;
 				}
+                if( TTF_Init() == -1 )
+                {
+                    printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+                    success = false;
+                }
 				else
 				{
 					SDL_SetRenderDrawColor(gRenderer, 105, 105, 105, 0xFF);
@@ -140,6 +156,12 @@ bool loadMedia(){
 			if(Lsprites[i]->texture[j] == NULL)
 				success = false;
 		}
+	}
+
+	gFont = TTF_OpenFont( "OpenSans-Regular.ttf", 20 );
+
+	if(gFont == NULL){
+		success = false;
 	}
 
 	return success;
@@ -209,10 +231,17 @@ void playerMovement(){
     }
 }
 
+void displayFPS(){
+	loadFromText(gRenderer, fpsText, fpsStr, gFont, textColor);
+	renderTexture(gRenderer, fpsText, 0, 0, NULL, fpsText->width, fpsText->height);
+}
+
+
 void display(){
 	// Clear screen
 	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 	SDL_RenderClear(gRenderer);
+
 
 	drawFloors(gRenderer, SCREEN_HEIGHT, SCREEN_WIDTH);
 	//draw rays and walls
@@ -225,6 +254,7 @@ void display(){
 
 	// //draw player
 	// drawPlayer(gRenderer, player);
+	displayFPS();
 
 	// Update screen
 	SDL_RenderPresent(gRenderer);
@@ -238,6 +268,8 @@ void close(){
 	// Point global pointers to NULL
 	gRenderer = NULL;
 	gWindow = NULL;
+	gFont = NULL;
+	TTF_CloseFont( gFont );
 
 	// Destroy all textures
 	for(int i = 0; i < n_textures;i++)
@@ -252,6 +284,7 @@ void close(){
 	}
 
 	// Quit SDL subsystems
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -285,12 +318,15 @@ int main(int argc, char *args[])
 
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
+
 				if( avgFPS > 2000000 )
 				{
 				    avgFPS = 0;
 				}
-				// printf("%f\n", avgFPS);
+
+				sprintf(fpsStr, "%.2f fps", avgFPS);
 				display();
+				displayFPS(fpsStr);
 				frames++;
 			}
 		}
