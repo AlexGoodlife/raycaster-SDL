@@ -22,11 +22,12 @@ int mapSprites[] =   //Map to determine sprite positions
  0,0,0,0,3,4,5,0,
  0,0,0,0,0,0,0,0,
  0,0,0,0,0,0,0,0,
- 0,1,0,0,0,2,0,0,
+ 0,1,0,2,0,7,0,0,
  0,0,0,0,0,0,0,0,
  0,0,0,6,0,0,0,0,
  0,0,0,0,0,0,0,0,	
 };
+
 
 // Draws 2D map grid based on wall map
 void drawMap2D(SDL_Renderer *gRenderer){

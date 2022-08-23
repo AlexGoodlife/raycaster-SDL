@@ -56,7 +56,7 @@ bool init(){
 	*fpsText = temp;
 
 	BARREL_1 = spriteMapCons(1,0,true,STATIC_COLIDE,NULL,1);
-	LAMP = spriteMapCons(2,0,true,DYNAMIC,NULL,1);
+	LAMP = spriteMapCons(2,0,true,STATIC_NCOLIDE,NULL,1);
 	PILLAR_1 = spriteMapCons(3,0,true,STATIC_COLIDE,NULL,1);
 	PILLAR_2 = spriteMapCons(4,0,true,STATIC_COLIDE,NULL,1);
 	PILLAR_3 = spriteMapCons(5,0,true,STATIC_COLIDE,NULL,1);
@@ -136,13 +136,13 @@ bool loadMedia(){
 	ARMOUR_1->texture[0] = loadFromFile("sprites/knight_t.png", gRenderer, gWindow);
 
 	GUARD_1->texture[0] = loadFromFile("sprites/guard/guard_1_t.png", gRenderer, gWindow);
-	GUARD_1->texture[1] = loadFromFile("sprites/guard/guard_2_t.png", gRenderer, gWindow);
-	GUARD_1->texture[2] = loadFromFile("sprites/guard/guard_3_t.png", gRenderer, gWindow);
-	GUARD_1->texture[3] = loadFromFile("sprites/guard/guard_4_t.png", gRenderer, gWindow);
+	GUARD_1->texture[1] = loadFromFile("sprites/guard/guard_8_t.png", gRenderer, gWindow);
+	GUARD_1->texture[2] = loadFromFile("sprites/guard/guard_7_t.png", gRenderer, gWindow);
+	GUARD_1->texture[3] = loadFromFile("sprites/guard/guard_6_t.png", gRenderer, gWindow);
 	GUARD_1->texture[4] = loadFromFile("sprites/guard/guard_5_t.png", gRenderer, gWindow);
-	GUARD_1->texture[5] = loadFromFile("sprites/guard/guard_6_t.png", gRenderer, gWindow);
-	GUARD_1->texture[6] = loadFromFile("sprites/guard/guard_7_t.png", gRenderer, gWindow);
-	GUARD_1->texture[7] = loadFromFile("sprites/guard/guard_8_t.png", gRenderer, gWindow);
+	GUARD_1->texture[5] = loadFromFile("sprites/guard/guard_4_t.png", gRenderer, gWindow);
+	GUARD_1->texture[6] = loadFromFile("sprites/guard/guard_3_t.png", gRenderer, gWindow);
+	GUARD_1->texture[7] = loadFromFile("sprites/guard/guard_2_t.png", gRenderer, gWindow);
 
 	//Check if all textures were loaded properly
 	for(int i = 0; i < n_textures; i++){

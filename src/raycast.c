@@ -24,6 +24,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 	float rayAngle = fixAngle(player->angle + DEGREE*30);
 
 	for(int i = 0; i < 480;i++){
+
 		verticalMapText = 0;
 		horizontalMapText= 0;
 
@@ -100,7 +101,7 @@ float renderHorizontalRays(Player *player, float rayAngle, float *horizontalX, f
 		mx = (int)(*rayX)>>6;
 		my = (int)(*rayY)>>6;
 		mapPos = my * mapX + mx;
-		if(mapPos > 0 && mapPos< mapX*mapY && mapWalls[mapPos] >0){ // hit wall
+		if(mapPos > 0 && mapPos< mapX*mapY &&  mapWalls[mapPos] >0){ // hit wall
 			*horizontalX = *rayX;
 			*horizontalY = *rayY;
 			distanceH = distanceAngle(rayAngle, player->x, player->y, *rayX, *rayY);
@@ -204,7 +205,6 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 	// draw textured walls 2 pixels wide on screen from 64x64 texture
 	SDL_Rect wall = {textureX, 0, 1,64};
 	renderTexture(gRenderer,textures[horizontalMapText], i*2,lineOffset,&wall, 2, lineHeight);
-
 	//  TEXTUREDFLOOR ATTEMPT
 
 	// for(int j = lineOffset + lineHeight;j < 540;j++){
@@ -300,11 +300,18 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 
 		int txt_x;
 		float angle = player->angle;
-		// calculate angle between player and sprite 
-		float txt_ang = fixAngle(-atan2(spriteY, spriteX));
 
-		//round angle to nearest indexed texture in sprite texture array
-		txt_x = (int)((txt_ang)) % SortedSprites[s]->n_texts;
+		// calculate angle between player and sprite 
+		float txt_ang = fixAngle(atan2(spriteY, spriteX));
+		
+		// if(SortedSprites[s]->type == DYNAMIC)
+		// 	printf("%f\n", txt_ang * 180/PI);
+
+		float angleInterval = 2*PI / (SortedSprites[s]->n_texts);
+
+		float txt_relative = round(txt_ang/angleInterval) * angleInterval;
+
+		txt_x = (int)round((txt_relative) / angleInterval) % SortedSprites[s]->n_texts;
 
 		float CS=cos(angle), SN=sin(angle); //rotate around origin
 
