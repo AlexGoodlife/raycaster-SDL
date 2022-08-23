@@ -50,6 +50,11 @@ bool init(){
 	player->deltaX = cos(player->angle);
 	player->deltaY = sin(player->angle);
 
+	LTexture temp = {NULL, NULL, 0,0};
+	fpsText = malloc(sizeof(LTexture*));
+
+	*fpsText = temp;
+
 	BARREL_1 = spriteMapCons(1,0,true,STATIC_COLIDE,NULL,1);
 	LAMP = spriteMapCons(2,0,true,DYNAMIC,NULL,1);
 	PILLAR_1 = spriteMapCons(3,0,true,STATIC_COLIDE,NULL,1);
@@ -60,10 +65,6 @@ bool init(){
 
 	// memcpy everything in Lsprites to SortedSprites, because we are copying pointers we can do this in init
 	memcpy(SortedSprites, Lsprites, sizeof(Sprite*)*n_sprites);
-
-	LTexture temp = {NULL, NULL, 0,0};
-	fpsText = malloc(sizeof(LTexture*));
-	*fpsText = temp;
 
 
 	// Initialize SDL
@@ -326,7 +327,6 @@ int main(int argc, char *args[])
 
 				sprintf(fpsStr, "%.2f fps", avgFPS);
 				display();
-				displayFPS(fpsStr);
 				frames++;
 			}
 		}
