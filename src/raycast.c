@@ -188,14 +188,14 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 
 	//Modulating color for lighting and flipping textures if needed
 	if(shading == 1){
-		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, 255, 255, 255);
+		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255));
 		textureX = (int)((rayX))%64;
 		if(rayAngle > PI){
 			textureX = 63-textureX;
 		}
 	}
 	else{
-		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, 100, 100, 100);
+		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155));
 		textureX = (int)((rayY))%64;
 		if(rayAngle > PI2 && rayAngle < PI3){
 			textureX = 63-textureX;
