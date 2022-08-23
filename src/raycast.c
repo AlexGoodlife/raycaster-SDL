@@ -4,7 +4,7 @@
 #include "../include/raycast.h"
 
 // Z buffer to keep track of wall distances
-int Zbuffer[480];
+int Zbuffer[240];
 
 //Main Ray drawing function
 void drawRays(SDL_Renderer *gRenderer, Player *player){
@@ -23,7 +23,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 
 	float rayAngle = fixAngle(player->angle + DEGREE*30);
 
-	for(int i = 0; i < 480;i++){
+	for(int i = 0; i < 240;i++){
 
 		verticalMapText = 0;
 		horizontalMapText= 0;
@@ -61,7 +61,7 @@ void drawRays(SDL_Renderer *gRenderer, Player *player){
 		//Draw 3D
 		draw3D(gRenderer, player, rayAngle, distanceTotal, horizontalMapText,shading, rayX, rayY,i);
 	
-		rayAngle = fixAngle(rayAngle - DEGREE/8);
+		rayAngle = fixAngle(rayAngle - DEGREE/4);
 	}
 }
 
@@ -188,14 +188,16 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 
 	//Modulating color for lighting and flipping textures if needed
 	if(shading == 1){
-		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255));
+		// SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255),min(255/(Zbuffer[i]*0.01), 255));
+		SDL_SetTextureColorMod(textures[horizontalMapText]->texture,255,255,255);
 		textureX = (int)((rayX))%64;
 		if(rayAngle > PI){
 			textureX = 63-textureX;
 		}
 	}
 	else{
-		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155));
+		// SDL_SetTextureColorMod(textures[horizontalMapText]->texture, min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155),min(155/(Zbuffer[i]*0.01), 155));
+		SDL_SetTextureColorMod(textures[horizontalMapText]->texture, 100,100,100);
 		textureX = (int)((rayY))%64;
 		if(rayAngle > PI2 && rayAngle < PI3){
 			textureX = 63-textureX;
@@ -204,23 +206,29 @@ void draw3D(SDL_Renderer *gRenderer, Player *player, float rayAngle, float dista
 
 	// draw textured walls 2 pixels wide on screen from 64x64 texture
 	SDL_Rect wall = {textureX, 0, 1,64};
-	renderTexture(gRenderer,textures[horizontalMapText], i*2,lineOffset,&wall, 2, lineHeight);
-	//  TEXTUREDFLOOR ATTEMPT
+	renderTexture(gRenderer,textures[horizontalMapText], i*4,lineOffset,&wall, 4, lineHeight);
+	
+	// if( i % 2 == 0){
+		// TEXTURE FLOORS KILL PERFORMANCE
+		float rayAngleFix = 1/cos(fixAngle(player->angle - rayAngle));
+		float degree = rayAngle;
+		for(int j = lineOffset + lineHeight;j < 640;j++){
+			float deltaY = 1/(j - (640/2.0));
 
-	// for(int j = lineOffset + lineHeight;j < 540;j++){
-	// 	// printf("%d\n", j);
-	// 	// printf("%f\n", rayAngle);
-	// 	float deltaY = j - (320/2.0);
-	// 	float degree = rayAngle;
-	// 	float rayAngleFix = cos(fixAngle(player->angle - rayAngle));
-	// 	textureX = (player->x/2 + (cos(degree)*158*32/deltaY/rayAngleFix));
-	// 	float textureY = (player->y/2) - (sin(degree)*158*32/deltaY/rayAngleFix);
-	// 	SDL_Rect floor = {(int)textureX%32,(int)textureY % 32, 1,32 };
-	// 	int map = mapFloors[mapX+(int)(textureX/32.0)];
-	// 	// printf("%d\n", map);
-	// 	SDL_SetTextureColorMod(textures[0]->texture, 255, 255, 255);
-	// 	renderTexture(gRenderer, textures[0], i*8,j,&floor,8,1);
+			textureX = (player->x + (cos(degree)*158*2*64*deltaY*rayAngleFix));
+			float textureY = (player->y) - (sin(degree)*158*2*64*deltaY*rayAngleFix);
 
+			SDL_Rect floor = {(int)textureX % 64,(int)textureY % 64, 1,1};
+
+			int map_i = ((int)textureY>>6)*mapX+((int)textureX>>6);
+			int map = mapFloors[map_i];
+			int map2 = mapCeiling[map_i];
+			// printf("%d\n", map);
+			SDL_SetTextureColorMod(textures[map]->texture, 110, 110, 110);
+			renderTexture(gRenderer, textures[map], i*4,j,&floor,4,1);
+			renderTexture(gRenderer, textures[map2], i*4,640-j,&floor,4,1);
+
+		}
 	// }
 
 }
@@ -257,6 +265,7 @@ bool checkColisions(SDL_Renderer *gRenderer, Player *player,float directionOffse
 	}
 	return sqrt(distance(player->x, player->y,rayX, rayY)) > 20;
 }
+
 
 //"Floor and ceiling" draw function, just 2 rectangles occupying half the screen horizontally each
 void drawFloors(SDL_Renderer *gRenderer,int screenHeight, int screenWidth){
@@ -342,7 +351,7 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 		for(int i = (spriteX-scale)*8; i < (((spriteX-scale)*8))+scale*16;i++){
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255,255);
 			SDL_Rect text = {j,0,1,64};
-			if(i > 0 && i< 960 && zDepth<Zbuffer[(int)i/2]){
+			if(i > 0 && i< 960 && zDepth<Zbuffer[(int)i/4]){
 				renderTexture(gRenderer, SortedSprites[s]->texture[txt_x], i,spriteY*8, &text,1,scale*16);
 			}
 			j+=diff;

@@ -240,11 +240,12 @@ void displayFPS(){
 
 void display(){
 	// Clear screen
-	SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+	SDL_SetRenderDrawColor( gRenderer, 100, 100, 100, 0xFF );
 	SDL_RenderClear(gRenderer);
 
-
+	#ifndef TEXT_FLOORS
 	drawFloors(gRenderer, SCREEN_HEIGHT, SCREEN_WIDTH);
+	#endif
 	//draw rays and walls
 	drawRays(gRenderer, player);
 
@@ -305,7 +306,7 @@ int main(int argc, char *args[])
 			SDL_Event e;
 			Timer mTimer = timer(0,0,false,false);
 			Timer frameTimer = timer(0,0,false,false);
-			int frames = 0;
+			unsigned int frames = 0;
 
 			startTimer(&mTimer);
 			startTimer(&frameTimer);
@@ -324,10 +325,13 @@ int main(int argc, char *args[])
 				{
 				    avgFPS = 0;
 				}
-
 				sprintf(fpsStr, "%.2f fps", avgFPS);
 				display();
 				frames++;
+				if(frames == INT32_MAX - 1){
+					frames = 0;
+					startTimer(&mTimer);
+				}
 			}
 		}
 	}
