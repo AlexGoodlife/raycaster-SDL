@@ -17,11 +17,10 @@ Sprite* SortedSprites[n_sprites];
 
 Player* player;
 
-float mouseX;
-float mouseY;
-float time = 10000;
+float mouseSens = 0.1;
 
 float avgFPS;
+double frameTime;
 
 // The window we'll be rendering to
 SDL_Window *gWindow = NULL;
@@ -146,28 +145,12 @@ bool loadMedia(){
 	return success;
 }
 
-void mouse_movement(SDL_Event *e){
-	float lastPos = mouseX;
-    mouseX = (float)e->motion.x - CTR_X;
-	// mouseY = (float)e->motion.y;
-	if(mouseX < lastPos){
-		player->angle -= 0.008;
-	if(player->angle < 0)
-		player->angle += 2*PI;
-	player->deltaX = cos(player->angle)*5;
-	player->deltaY = sin(player->angle)*5;
-	}
-	else if(mouseX > lastPos){
-		player->angle += 0.008;
-		if(player->angle > 2*PI)
-			player->angle -= 2*PI;
-		player->deltaX = cos(player->angle)*5;
-		player->deltaY = sin(player->angle)*5;
-	}
-	if(mouseX > SCREEN_WIDTH || mouseX < 0){
-		SDL_WarpMouseInWindow(gWindow, CTR_X, CTR_Y);
-        lastPos = CTR_X;
-    }
+void mouse_movement(SDL_Event *e, double rotSpeed){
+    Sint32 mouseX = e->motion.xrel;
+	player->angle -= 0.01 * mouseSens * mouseX;
+	fixAngle(player->angle);
+	player->deltaX = cos(player->angle);
+	player->deltaY = -sin(player->angle);
 }
 
 bool events(SDL_Event *e){
@@ -182,28 +165,26 @@ bool events(SDL_Event *e){
 
         if (e->type == SDL_MOUSEMOTION)
         {	
-			// mouse_movement(e);
+			mouse_movement(e, frameTime);
         }
 	}
 	return false;
 }
 
 void playerMovement(){
-	float oldTime = time;
-	time = SDL_GetTicks();
-	double frameTime = (time - oldTime);
-	double rotSpeed = frameTime; //the constant value is in radians/second
+	double rotSpeed = frameTime;
 	const Uint8* currentKeyStates = SDL_GetKeyboardState( NULL );
+
     if( currentKeyStates[ SDL_SCANCODE_W ] )
-        {
-			if(checkColisions(gRenderer, player,0))
-				movePlayer(gRenderer, player, FORWARD, rotSpeed);
-        }
+    {
+		if(checkColisions(gRenderer, player,0))
+			movePlayer(gRenderer, player, FORWARD, rotSpeed);
+    }
     if( currentKeyStates[ SDL_SCANCODE_S ] )
-        {
-			if(checkColisions(gRenderer, player,PI))
-				movePlayer(gRenderer, player, BACKWARDS,rotSpeed);
-        }
+    {
+		if(checkColisions(gRenderer, player,PI))
+			movePlayer(gRenderer, player, BACKWARDS,rotSpeed);
+    }
 	if( currentKeyStates[ SDL_SCANCODE_Q ] )
 	{
 		playerLook(player, LEFT, rotSpeed);
@@ -289,12 +270,19 @@ int main(int argc, char *args[])
 			bool quit = false;
 			SDL_Event e;
 			Timer mTimer = timer(0,0,false,false);
+			Timer frameTimer = timer(0,0,false,false);
 			int frames = 0;
 
 			startTimer(&mTimer);
+			startTimer(&frameTimer);
 			while (!quit){
 				quit = events(&e);
+
+				frameTime = getTimerTicks(&frameTimer);
+				startTimer(&frameTimer);
+
 				playerMovement();
+
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
 				if( avgFPS > 2000000 )
