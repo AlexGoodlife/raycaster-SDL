@@ -2,14 +2,14 @@
 
 ## Raycaster with textures
 
- ![Sample Image](images/raycaster_new.PNG)
+ ![Sample Image](images/sprites.PNG)
 
- ![64x64 texture and Sprites Added](images/sprites.PNG)
+ ![64x64 texture and Sprites Added](images/floors_ceils.PNG)
 
    I made this small raycasting engine as a way to learn SDL and also some graphical computing, currently it serves as a pseudo Wolfenstein3D clone
 
    **THIS ENGINE IS IN DEVELOPMENT**, 
-   I am currently working on optimizing and adding features to the engine
+   I am currently working on optimizing and adding features to the engine. Currently the ceilings and floors are very performance heavy, if turned off the engine runs more smoothly (Over 1000fps on my machine)
 
 ## Features
    - [ ] Fully textured 64x64 walls, floors and ceilings (To turn off floors and ceilings undefine TEXT_FLOOR in world.h)
