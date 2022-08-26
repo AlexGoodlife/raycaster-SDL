@@ -4,9 +4,9 @@
 #include "../include/raycast.h"
 
 
-#define RESOLUTION_SCALE 2
+#define RESOLUTION_SCALE 3
 #define FOV 60
-#define pixel_width 4
+#define pixel_width 2
 
 
 // Z buffer to keep track of wall distances
@@ -319,7 +319,9 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 		float angle = player->angle;
 
 		// calculate angle between player and sprite 
-		float txt_ang = fixAngle(atan2(spriteY, spriteX));
+		float temp_ang = fixAngle(atan2(spriteY, spriteX));
+
+		float txt_ang = fixAngle(temp_ang - SortedSprites[s]->angle); 
 		
 		// if(SortedSprites[s]->type == DYNAMIC)
 		// 	printf("%f\n", txt_ang * 180/PI);
@@ -340,7 +342,7 @@ void drawSprites(SDL_Renderer *gRenderer,Player *player){
 
 		// Convert to screen X and Y
 		spriteX= (spriteX*108.0/spriteY)+(120>>1);
-		spriteY=(spriteZ*108.0/spriteY)+( 80>>1);
+		spriteY=(spriteZ*108.0/spriteY)+( 80 >> 1);
 
 		float scale = 32*80/zDepth;
 		if(scale<0){ 

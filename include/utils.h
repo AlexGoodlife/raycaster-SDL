@@ -96,6 +96,7 @@ typedef struct{
     float x;
     float y;
     float z;
+    float angle;
     float playerDist;
     bool state;
     enum sprite_type type;
@@ -111,9 +112,9 @@ extern Sprite *Lsprites[7];
 //Array to sort sprites
 extern Sprite *SortedSprites[n_sprites];
 
-Sprite* sprite(float x, float y, float z, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts);
+Sprite* sprite(float x, float y, float z,float angle, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts);
 
-Sprite* spriteMapCons(int mapValue, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts);
+Sprite* spriteMapCons(int mapValue,float angle, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts);
 
 void freeSprite(Sprite* spr);
 

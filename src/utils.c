@@ -24,9 +24,14 @@ float fixAngle(float angle){
 }
 
 float simetricalAngle(float angle){
-	if(angle == PI || angle == 0)
-		return angle;
-	return -angle;
+	float result;
+	if(angle == 0)
+		result = PI;
+	else if(angle == PI)
+		result = 0;
+	else
+		result = -angle;
+	return fixAngle(result);
 }
 
 float max(float x, float y){
@@ -323,21 +328,21 @@ void unlockTexture(LTexture* texture)
 
 
 //Sprite constructor
-Sprite* sprite(float x, float y, float z, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
+Sprite* sprite(float x, float y, float z, float angle, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
 	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
 	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
-	Sprite temp = {x, y, z, playerDist, state, type, result->texture, n_texts};
+	Sprite temp = {x, y, z, angle,playerDist, state, type, result->texture, n_texts};
 	*result = temp;
 	return result;
 }
 
 //Sprite constructor from map
-Sprite* spriteMapCons(int mapValue, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
+Sprite* spriteMapCons(int mapValue, float angle, float playerDist, bool state, enum sprite_type type, LTexture **texture, int n_texts){
 	Sprite * result = (Sprite*)malloc(sizeof(Sprite));
 	result->texture = (LTexture**)malloc(sizeof(LTexture*)*n_texts);
 	int yCoord = 0;
 	int xCoord = findCoord(mapSprites, mapX, mapY, mapValue,&yCoord);
-	Sprite temp = {(xCoord + 0.5) * blockSize, (yCoord + 0.5) * blockSize, -20, playerDist, state, type, result->texture, n_texts};
+	Sprite temp = {(xCoord + 0.5) * blockSize, (yCoord + 0.5) * blockSize, -20, angle,playerDist, state, type, result->texture, n_texts};
 	*result = temp;
 	return result;
 }

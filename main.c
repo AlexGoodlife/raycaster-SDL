@@ -55,13 +55,13 @@ bool init(){
 
 	*fpsText = temp;
 
-	BARREL_1 = spriteMapCons(1,0,true,STATIC_COLIDE,NULL,1);
-	LAMP = spriteMapCons(2,0,true,STATIC_NCOLIDE,NULL,1);
-	PILLAR_1 = spriteMapCons(3,0,true,STATIC_COLIDE,NULL,1);
-	PILLAR_2 = spriteMapCons(4,0,true,STATIC_COLIDE,NULL,1);
-	PILLAR_3 = spriteMapCons(5,0,true,STATIC_COLIDE,NULL,1);
-	ARMOUR_1 = spriteMapCons(6,0,true,STATIC_COLIDE,NULL,1);
-	GUARD_1 = spriteMapCons(7,0,true,DYNAMIC,NULL, 8);
+	BARREL_1 = spriteMapCons(1,0,0,true,STATIC_COLIDE,NULL,1);
+	LAMP = spriteMapCons(2,0,0,true,STATIC_NCOLIDE,NULL,1);
+	PILLAR_1 = spriteMapCons(3,0,0,true,STATIC_COLIDE,NULL,1);
+	PILLAR_2 = spriteMapCons(4,0,0,true,STATIC_COLIDE,NULL,1);
+	PILLAR_3 = spriteMapCons(5,0,0,true,STATIC_COLIDE,NULL,1);
+	ARMOUR_1 = spriteMapCons(6,0,0,true,STATIC_COLIDE,NULL,1);
+	GUARD_1 = spriteMapCons(7,PI,0,true,DYNAMIC,NULL, 8);
 
 	// memcpy everything in Lsprites to SortedSprites, because we are copying pointers we can do this in init
 	memcpy(SortedSprites, Lsprites, sizeof(Sprite*)*n_sprites);
@@ -321,10 +321,6 @@ int main(int argc, char *args[])
 				avgFPS = getTimerTicks(&mTimer)/ 1000.0f;
 				avgFPS = frames / (getTimerTicks(&mTimer) / 1000.f);
 
-				if( avgFPS > 2000000 )
-				{
-				    avgFPS = 0;
-				}
 				sprintf(fpsStr, "%.2f fps", avgFPS);
 				display();
 				frames++;

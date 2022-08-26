@@ -1,8 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-// World textures and maps, textures taken from 3D Sage
-
 #include <SDL.h>
 #define TEXT_FLOORS
 
